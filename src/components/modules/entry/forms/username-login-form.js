@@ -30,7 +30,7 @@ export function UsernameLoginForm() {
     if (authToken.data != null && document != null) {
       const a = document.createElement("a");
       a.style.display = "none";
-      a.href = "https://agro.brisklyminds.com/token=" + authToken.data;
+      a.href = "https://agro.brisklyminds.com?token=" + authToken.data;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
