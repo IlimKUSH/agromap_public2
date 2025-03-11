@@ -16,6 +16,7 @@ import {useState} from "react";
 import {UsernameLoginForm} from "@/components/modules/entry/forms/username-login-form";
 import {EsiLoginForm} from "@/components/modules/entry/forms/esi-login-form";
 import {useProfileStore} from "@/stores/profile";
+import Image from "next/image";
 
 
 export default function EntryModal() {
@@ -54,9 +55,9 @@ export default function EntryModal() {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <Stack direction="row" p={2}>
           <Stack direction="row" spacing={2} sx={{ flex: "1 1 auto", alignItems: "center" }}>
-            <img src="/logo.png" alt="logo" width={50} height={50} style={{ borderRadius: "50%", backgroundColor: "white", padding: 5 }} />
+            <Image src="/logo.png" alt="logo" width={50} height={50} style={{ borderRadius: "50%", backgroundColor: "white", padding: 5 }} />
             <Typography variant="h6" fontWeight={700}>
-              Интеллектуальная система "Агромап"
+              Интеллектуальная система Агромап&#34;
             </Typography>
           </Stack>
           <IconButton onClick={handleClose} size="small">

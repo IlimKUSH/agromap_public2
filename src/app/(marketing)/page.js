@@ -59,7 +59,7 @@ export default function Page() {
           </Box>
 
           <Typography sx={{flexShrink: 0, textAlign: 'center', fontWeight: 'bold'}} variant="h5">
-            Интелектуальная система "Агромап"
+            Интелектуальная система Агромап&#34;
           </Typography>
 
           <Stack direction="row" spacing={2}>
