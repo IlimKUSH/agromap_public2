@@ -12,7 +12,7 @@ import { toast } from '@/components/core/toaster';
 
 export const languageFlags = {
   // en: '/assets/flag-uk.svg',
-  en: '/assets/flag-ru.svg',
+  ru: '/assets/flag-ru.svg',
   de: '/assets/flag-de.svg',
   es: '/assets/flag-es.svg',
 };
