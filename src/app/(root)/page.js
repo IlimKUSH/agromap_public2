@@ -20,7 +20,7 @@ import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Select from '@mui/material/Select';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Unstable_Grid2';
 import {Option} from '@/components/core/option';
 import EntryModal from "@/components/modules/entry/entry-modal";
 
