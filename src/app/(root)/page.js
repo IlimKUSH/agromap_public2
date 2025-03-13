@@ -84,7 +84,7 @@ export default function Page() {
         </Stack>
 
         <Grid container spacing={2} sx={{position: 'relative'}}>
-          <Grid md={2.4} xs={12}>
+          <Grid item md={2.4} xs={12}>
             <Summary
               amount={0.6}
               bg="#16b364"
@@ -95,7 +95,7 @@ export default function Page() {
               titleSx={{color: '#ffffff'}}
             />
           </Grid>
-          <Grid md={2.4} xs={12}>
+          <Grid item md={2.4} xs={12}>
             <Summary
               amount={0.3}
               description="Влажность почвы"
@@ -106,7 +106,7 @@ export default function Page() {
               trend="up"
             />
           </Grid>
-          <Grid md={2.4} xs={12}>
+          <Grid item md={2.4} xs={12}>
             <Summary
               amount={0.2}
               background="#d2f9des"
@@ -118,7 +118,7 @@ export default function Page() {
               trend="down"
             />
           </Grid>
-          <Grid md={2.4} xs={12}>
+          <Grid item md={2.4} xs={12}>
             <Summary
               amount={-0.3}
               background="#d2f9des"
@@ -130,7 +130,7 @@ export default function Page() {
               trend="up"
             />
           </Grid>
-          <Grid md={2.4} xs={12}>
+          <Grid item md={2.4} xs={12}>
             <IconButton sx={{position: 'absolute', zIndex: 1000, right: -13, top: 70}}>
               <KeyboardDoubleArrowRightIcon sx={{fontSize: '46px'}}/>
             </IconButton>
@@ -147,7 +147,7 @@ export default function Page() {
           </Grid>
 
           {/* MAP */}
-          <Grid md={12} xs={12}>
+          <Grid item md={12} xs={12}>
             <Card>
               <CardHeader
                 action={
@@ -176,7 +176,7 @@ export default function Page() {
               />
               <CardContent sx={{p: 0, flex: 1}}>
                 <Grid container spacing={2}>
-                  <Grid md={2} xs={12}>
+                  <Grid item md={2} xs={12}>
                     <Subscriptions
                       subscriptions={[
                         {
@@ -224,10 +224,10 @@ export default function Page() {
                       ]}
                     />
                   </Grid>
-                  <Grid md={8} xs={12}>
+                  <Grid item md={8} xs={12}>
                     <MapComponent/>
                   </Grid>
-                  <Grid md={2} xs={12}>
+                  <Grid item md={2} xs={12}>
                     <Subscriptions2
                       subscriptions={[
                         {

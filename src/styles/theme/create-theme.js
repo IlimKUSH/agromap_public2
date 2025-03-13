@@ -1,4 +1,4 @@
-import { extendTheme } from '@mui/material/styles';
+import { experimental_extendTheme as extendTheme } from '@mui/material/styles';
 
 import { colorSchemes } from './color-schemes';
 import { components } from './components/components';
