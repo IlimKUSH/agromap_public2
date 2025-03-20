@@ -26,7 +26,7 @@ export function Summary({ amount, diff, bg, icon: Icon, title, description, icon
               color: iconColor,
             }}
           >
-            <Icon fontSize="var(--icon-fontSize-lg)" />
+            <Icon fontSize={20} />
           </Avatar>
           <div>
             <Typography variant="h5" sx={{width: '150px'}}>{title } ≈ {new Intl.NumberFormat('en-US').format(amount)}</Typography>

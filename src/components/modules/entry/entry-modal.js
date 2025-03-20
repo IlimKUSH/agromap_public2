@@ -24,8 +24,6 @@ export default function EntryModal() {
 
   const profile = useProfileStore((state) => state);
 
-  console.log(profile);
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -34,7 +32,7 @@ export default function EntryModal() {
       if (document != null) {
         const a = document.createElement("a");
         a.style.display = "none";
-        a.href = "https://agro.brisklyminds.com?token=" + profile.authToken.data;
+        a.href = `https://agro.brisklyminds.com?token=${encodeURIComponent(profile.authToken.data)}&axelorToken=${encodeURIComponent(profile.getCookie())}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
