@@ -14,7 +14,7 @@ export function EsiLoginForm() {
   };
 
   return (
-    <Stack alignItems="center">
+    // <Stack alignItems="center">
       <Button
         variant="contained"
         color="secondary"
@@ -25,6 +25,6 @@ export function EsiLoginForm() {
       >
         Войти через ESI
       </Button>
-    </Stack>
+    // </Stack>
   );
 }

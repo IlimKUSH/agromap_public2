@@ -3,7 +3,7 @@ import { inputBaseClasses } from '@mui/material/InputBase';
 export const MuiInput = {
   defaultProps: { disableUnderline: true },
   styleOverrides: {
-    root: { 'label + &': { marginTop: '8px' } },
+    root: { 'label + &': { marginTop: '0px' } },
     input: {
       height: 'auto',
       padding: 0,

@@ -180,37 +180,37 @@ export default function Page() {
                     <Subscriptions
                       subscriptions={[
                         {
-                          id: 'supabase',
+                          id: 'q',
                           title: 'Ак-Талинский',
                           size: '1.3',
                           prod: 78,
                         },
                         {
-                          id: 'supabase',
+                          id: 'w',
                           title: 'Ат-Башинский',
                           size: '1.2',
                           prod: 47,
                         },
                         {
-                          id: 'supabase',
+                          id: 'e',
                           title: 'Джумгальский',
                           size: '0.9',
                           prod: 39,
                         },
                         {
-                          id: 'supabase',
+                          id: 'f',
                           title: 'Кочкорский',
                           size: '0.7',
                           prod: 34,
                         },
                         {
-                          id: 'supabase',
+                          id: 'c',
                           title: 'Нарынский ',
                           size: '0.4',
                           prod: 25,
                         },
                         {
-                          id: 'vercel',
+                          id: 'verczxcel',
                           title: 'Тогуз-Тороузский',
                           size: '0.3',
                           prod: 14,
@@ -237,7 +237,7 @@ export default function Page() {
                           size1: '260',
                           size2: '216',
                           size3: '109',
-                          id: 'supabase',
+                          id: 'asd',
                           title: 'Зерновые - 2,0 тыс. га.',
                         },
                         {

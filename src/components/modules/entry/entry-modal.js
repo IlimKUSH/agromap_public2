@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import {DialogActions, DialogTitle, TextField} from "@mui/material";
+import {DialogActions, DialogTitle, Divider, TextField} from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import DialogContent from "@mui/material/DialogContent";
@@ -51,11 +51,11 @@ export default function EntryModal() {
       </Button>
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <Stack direction="row" p={2}>
+        <Stack direction="row" p={2} sx={{ paddingBottom: 0 }}>
           <Stack direction="row" spacing={2} sx={{ flex: "1 1 auto", alignItems: "center" }}>
             <Image src="/logo.png" alt="logo" width={50} height={50} style={{ borderRadius: "50%", backgroundColor: "white", padding: 5 }} />
             <Typography variant="h6" fontWeight={700}>
-              Интеллектуальная система Агромап&#34;
+              ГипроЗем ГИС системы
             </Typography>
           </Stack>
           <IconButton onClick={handleClose} size="small">
@@ -63,14 +63,12 @@ export default function EntryModal() {
           </IconButton>
         </Stack>
 
-        <DialogTitle textAlign="center" fontWeight={700}>
-          Вход в систему
-        </DialogTitle>
         <DialogContent>
-          <Stack direction="column" gap={2}>
-            <UsernameLoginForm />
-            <EsiLoginForm />
-          </Stack>
+          <UsernameLoginForm />
+          <Divider sx={{ my: 2 }}>
+            <Typography variant="body2" color="text.secondary">или</Typography>
+          </Divider>
+          <EsiLoginForm />
         </DialogContent>
       </Dialog>
     </>

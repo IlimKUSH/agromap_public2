@@ -98,7 +98,7 @@ export const useProfileStore = create()(
       },
     }),
     {
-      name: "profile",
+      name: "agromapProfile",
     }
   )
 );
