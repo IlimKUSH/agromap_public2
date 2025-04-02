@@ -65,10 +65,6 @@ export default function EntryModal() {
 
         <DialogContent>
           <UsernameLoginForm />
-          <Divider sx={{ my: 2 }}>
-            <Typography variant="body2" color="text.secondary">или</Typography>
-          </Divider>
-          <EsiLoginForm />
         </DialogContent>
       </Dialog>
     </>
