@@ -1,22 +1,9 @@
 'use client';
 
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import {DialogActions, DialogTitle, Divider, TextField} from "@mui/material";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import DialogContent from "@mui/material/DialogContent";
-import Box from "@mui/material/Box";
 import * as React from "react";
 import {useState} from "react";
-import {UsernameLoginForm} from "@/components/modules/entry/forms/username-login-form";
-import {EsiLoginForm} from "@/components/modules/entry/forms/esi-login-form";
 import {useProfileStore} from "@/stores/profile";
-import Image from "next/image";
 
 
 export default function EntryModal() {
