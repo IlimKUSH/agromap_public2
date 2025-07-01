@@ -10,7 +10,7 @@ export const california = {
   800: '#953b0b',
   900: '#7b310c',
   950: '#471701',
-};
+}
 
 export const chateauGreen = {
   50: '#edfcf2',
@@ -24,7 +24,7 @@ export const chateauGreen = {
   800: '#095c37',
   900: '#094b2f',
   950: '#032b1a',
-};
+}
 
 export const kepple = {
   50: '#f0fdfa',
@@ -38,7 +38,7 @@ export const kepple = {
   800: '#115e56',
   900: '#134e48',
   950: '#042f2c',
-};
+}
 
 export const neonBlue = {
   50: '#ecf0ff',
@@ -52,7 +52,7 @@ export const neonBlue = {
   800: '#3725ae',
   900: '#302689',
   950: '#1e1650',
-};
+}
 
 export const nevada = {
   50: '#fbfcfe',
@@ -66,7 +66,7 @@ export const nevada = {
   800: '#202427',
   900: '#121517',
   950: '#090a0b',
-};
+}
 
 export const redOrange = {
   50: '#fef3f2',
@@ -80,7 +80,7 @@ export const redOrange = {
   800: '#9a221a',
   900: '#80231c',
   950: '#460d09',
-};
+}
 
 export const royalBlue = {
   50: '#ecf3ff',
@@ -94,7 +94,7 @@ export const royalBlue = {
   800: '#2225b1',
   900: '#24298b',
   950: '#151651',
-};
+}
 
 export const shakespeare = {
   50: '#ecfdff',
@@ -108,7 +108,7 @@ export const shakespeare = {
   800: '#145876',
   900: '#154964',
   950: '#082f44',
-};
+}
 
 export const stormGrey = {
   50: '#f9fafb',
@@ -122,7 +122,7 @@ export const stormGrey = {
   800: '#313749',
   900: '#212636',
   950: '#121621',
-};
+}
 
 export const tomatoOrange = {
   50: '#fff3ed',
@@ -136,4 +136,4 @@ export const tomatoOrange = {
   800: '#9f2c0f',
   900: '#7e1110',
   950: '#440608',
-};
+}

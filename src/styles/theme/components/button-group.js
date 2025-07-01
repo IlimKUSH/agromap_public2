@@ -1,1 +1,1 @@
-export const MuiButtonGroup = { defaultProps: { disableRipple: true } };
+export const MuiButtonGroup = { defaultProps: { disableRipple: true } }

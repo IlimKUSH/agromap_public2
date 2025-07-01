@@ -1,1 +1,1 @@
-export const MuiLink = { defaultProps: { underline: 'hover' } };
+export const MuiLink = { defaultProps: { underline: 'hover' } }

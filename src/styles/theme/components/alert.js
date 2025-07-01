@@ -1,1 +1,1 @@
-export const MuiAlert = { styleOverrides: { message: { fontWeight: 500 } } };
+export const MuiAlert = { styleOverrides: { message: { fontWeight: 500 } } }

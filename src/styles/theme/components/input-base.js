@@ -19,7 +19,7 @@ export const MuiInputBase = {
       caretColor: 'var(--mui-palette-primary-main)', // Add this line
       '&::placeholder': {
         color: 'var(--mui-palette-text-secondary)',
-        opacity: 1
+        opacity: 1,
       },
       '&:-webkit-autofill': {
         WebkitBoxShadow: '0 0 0 1000px white inset !important',
@@ -31,7 +31,7 @@ export const MuiInputBase = {
     sizeSmall: {
       '--Input-fontSize': '0.875rem',
       '--Input-paddingInline': '8px',
-      '--Input-minHeight': '32px'
+      '--Input-minHeight': '32px',
     },
   },
-};
+}

@@ -1,1 +1,1 @@
-export const MuiFormGroup = { styleOverrides: { root: { gap: '16px' } } };
+export const MuiFormGroup = { styleOverrides: { root: { gap: '16px' } } }

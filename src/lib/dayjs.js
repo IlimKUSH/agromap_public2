@@ -1,9 +1,9 @@
-import dayjs, { extend } from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import updateLocale from 'dayjs/plugin/updateLocale';
+import dayjs, { extend } from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import updateLocale from 'dayjs/plugin/updateLocale'
 
-extend(relativeTime);
-extend(updateLocale);
+extend(relativeTime)
+extend(updateLocale)
 
 dayjs.updateLocale('en', {
   relativeTime: {
@@ -21,6 +21,6 @@ dayjs.updateLocale('en', {
     y: 'a year',
     yy: '%d years',
   },
-});
+})
 
-export { dayjs };
+export { dayjs }

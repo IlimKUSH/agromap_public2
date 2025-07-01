@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { chipClasses } from '@mui/material/Chip';
-import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
+import * as React from 'react'
+import { chipClasses } from '@mui/material/Chip'
+import { XCircle as XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle'
 
 function getSoftVars(color, dark) {
   if (dark) {
@@ -12,7 +12,7 @@ function getSoftVars(color, dark) {
       '--Chip-softHoverBg': `var(--mui-palette-${color}-700)`,
       '--Chip-softDeleteIconColor': `var(--mui-palette-${color}-200)`,
       '--Chip-softDeleteIconHoverColor': `var(--mui-palette-${color}-50)`,
-    };
+    }
   }
 
   return {
@@ -23,7 +23,7 @@ function getSoftVars(color, dark) {
     '--Chip-softHoverBg': `var(--mui-palette-${color}-200)`,
     '--Chip-softDeleteIconColor': `var(--mui-palette-${color}-700)`,
     '--Chip-softDeleteIconHoverColor': `var(--mui-palette-${color}-800)`,
-  };
+  }
 }
 
 export const MuiChip = {
@@ -37,10 +37,16 @@ export const MuiChip = {
       // Custom case for secondary, the rest is handled by the theme
 
       if (theme.palette.mode === 'dark') {
-        return { borderColor: 'var(--mui-palette-secondary-700)', color: 'var(--mui-palette-secondary-50)' };
+        return {
+          borderColor: 'var(--mui-palette-secondary-700)',
+          color: 'var(--mui-palette-secondary-50)',
+        }
       }
 
-      return { borderColor: 'var(--mui-palette-secondary-200)', color: 'var(--mui-palette-secondary-900)' };
+      return {
+        borderColor: 'var(--mui-palette-secondary-200)',
+        color: 'var(--mui-palette-secondary-900)',
+      }
     },
     soft: ({ ownerState }) => {
       return {
@@ -50,33 +56,39 @@ export const MuiChip = {
           backgroundColor: 'var(--Chip-softDisabledBg)',
           color: 'var(--Chip-softDisabledColor)',
         }),
-        ...(ownerState.clickable && { '&:hover': { backgroundColor: 'var(--Chip-softHoverBg)' } }),
+        ...(ownerState.clickable && {
+          '&:hover': { backgroundColor: 'var(--Chip-softHoverBg)' },
+        }),
         [`& .${chipClasses.deleteIcon}`]: {
           color: 'var(--Chip-softDeleteIconColor)',
-          '&:hover': { color: 'var(--Chip-softDeleteIconHoverColor)' },
+          '&:hover': {
+            color: 'var(--Chip-softDeleteIconHoverColor)',
+          },
         },
-        '&.Mui-focusVisible': { backgroundColor: 'var(--Chip-softHoverBg)' },
-      };
+        '&.Mui-focusVisible': {
+          backgroundColor: 'var(--Chip-softHoverBg)',
+        },
+      }
     },
     softPrimary: ({ theme }) => {
-      return getSoftVars('primary', theme.palette.mode === 'dark');
+      return getSoftVars('primary', theme.palette.mode === 'dark')
     },
     softSecondary: ({ theme }) => {
-      return getSoftVars('secondary', theme.palette.mode === 'dark');
+      return getSoftVars('secondary', theme.palette.mode === 'dark')
     },
     softSuccess: ({ theme }) => {
-      return getSoftVars('success', theme.palette.mode === 'dark');
+      return getSoftVars('success', theme.palette.mode === 'dark')
     },
     softInfo: ({ theme }) => {
-      return getSoftVars('info', theme.palette.mode === 'dark');
+      return getSoftVars('info', theme.palette.mode === 'dark')
     },
     softWarning: ({ theme }) => {
-      return getSoftVars('warning', theme.palette.mode === 'dark');
+      return getSoftVars('warning', theme.palette.mode === 'dark')
     },
     softError: ({ theme }) => {
-      return getSoftVars('error', theme.palette.mode === 'dark');
+      return getSoftVars('error', theme.palette.mode === 'dark')
     },
     iconSmall: { fontSize: 'var(--icon-fontSize-sm)' },
     iconMedium: { fontSize: 'var(--icon-fontSize-md)' },
   },
-};
+}

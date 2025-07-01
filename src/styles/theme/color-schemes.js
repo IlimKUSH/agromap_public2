@@ -9,7 +9,7 @@ import {
   shakespeare,
   stormGrey,
   tomatoOrange,
-} from './colors';
+} from './colors'
 
 const primarySchemes = {
   chateauGreen: {
@@ -19,18 +19,21 @@ const primarySchemes = {
       main: chateauGreen[500],
       dark: chateauGreen[600],
       contrastText: 'var(--mui-palette-common-white)',
-      activated: 'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))',
-      hovered: 'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-hoverOpacity))',
-      selected: 'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity))',
+      activated:
+        'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))',
+      hovered:
+        'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-hoverOpacity))',
+      selected:
+        'rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity))',
     },
   },
-};
+}
 
 export function colorSchemes(config) {
-  let primary = primarySchemes[config.primaryColor];
+  let primary = primarySchemes[config.primaryColor]
 
   if (!primary) {
-    primary = primarySchemes.chateauGreen;
+    primary = primarySchemes.chateauGreen
   }
 
   return {
@@ -54,9 +57,12 @@ export function colorSchemes(config) {
           main: redOrange[500],
           dark: redOrange[600],
           contrastText: 'var(--mui-palette-common-white)',
-          activated: 'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-activatedOpacity))',
-          hovered: 'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-hoverOpacity))',
-          selected: 'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-selectedOpacity))',
+          activated:
+            'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-activatedOpacity))',
+          hovered:
+            'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-hoverOpacity))',
+          selected:
+            'rgba(var(--mui-palette-error-mainChannel) / var(--mui-palette-action-selectedOpacity))',
         },
         info: {
           ...shakespeare,
@@ -64,9 +70,12 @@ export function colorSchemes(config) {
           main: shakespeare[500],
           dark: shakespeare[600],
           contrastText: 'var(--mui-palette-common-white)',
-          activated: 'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-activatedOpacity))',
-          hovered: 'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-hoverOpacity))',
-          selected: 'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-selectedOpacity))',
+          activated:
+            'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-activatedOpacity))',
+          hovered:
+            'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-hoverOpacity))',
+          selected:
+            'rgba(var(--mui-palette-info-mainChannel) / var(--mui-palette-action-selectedOpacity))',
         },
         neutral: { ...stormGrey },
         primary: primary.light,
@@ -76,9 +85,12 @@ export function colorSchemes(config) {
           main: nevada[700],
           dark: nevada[800],
           contrastText: 'var(--mui-palette-common-white)',
-          activated: 'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-activatedOpacity))',
-          hovered: 'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-hoverOpacity))',
-          selected: 'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-selectedOpacity))',
+          activated:
+            'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-activatedOpacity))',
+          hovered:
+            'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-hoverOpacity))',
+          selected:
+            'rgba(var(--mui-palette-secondary-mainChannel) / var(--mui-palette-action-selectedOpacity))',
         },
         success: {
           ...kepple,
@@ -86,9 +98,12 @@ export function colorSchemes(config) {
           main: kepple[500],
           dark: kepple[600],
           contrastText: 'var(--mui-palette-common-white)',
-          activated: 'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-activatedOpacity))',
-          hovered: 'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-hoverOpacity))',
-          selected: 'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-selectedOpacity))',
+          activated:
+            'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-activatedOpacity))',
+          hovered:
+            'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-hoverOpacity))',
+          selected:
+            'rgba(var(--mui-palette-success-mainChannel) / var(--mui-palette-action-selectedOpacity))',
         },
         text: {
           primary: 'var(--mui-palette-neutral-900)',
@@ -103,9 +118,12 @@ export function colorSchemes(config) {
           main: california[500],
           dark: california[600],
           contrastText: 'var(--mui-palette-common-white)',
-          activated: 'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-activatedOpacity))',
-          hovered: 'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-hoverOpacity))',
-          selected: 'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-selectedOpacity))',
+          activated:
+            'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-activatedOpacity))',
+          hovered:
+            'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-hoverOpacity))',
+          selected:
+            'rgba(var(--mui-palette-warning-mainChannel) / var(--mui-palette-action-selectedOpacity))',
         },
         Avatar: { defaultBg: 'var(--mui-palette-neutral-600)' },
         Backdrop: { bg: 'rgb(18, 22, 33, 0.8)' },
@@ -114,5 +132,5 @@ export function colorSchemes(config) {
         Tooltip: { bg: 'rgba(10, 13, 20, 0.75)' },
       },
     },
-  };
+  }
 }

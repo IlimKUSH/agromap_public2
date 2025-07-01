@@ -1,4 +1,4 @@
-import { listItemIconClasses } from '@mui/material/ListItemIcon';
+import { listItemIconClasses } from '@mui/material/ListItemIcon'
 
 export const MuiMenuItem = {
   defaultProps: { disableRipple: true },
@@ -11,4 +11,4 @@ export const MuiMenuItem = {
       [`& .${listItemIconClasses.root}`]: { minWidth: 'auto' },
     },
   },
-};
+}

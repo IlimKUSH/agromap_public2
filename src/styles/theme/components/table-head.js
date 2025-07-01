@@ -1,4 +1,4 @@
-import { tableCellClasses } from '@mui/material/TableCell';
+import { tableCellClasses } from '@mui/material/TableCell'
 
 export const MuiTableHead = {
   styleOverrides: {
@@ -10,4 +10,4 @@ export const MuiTableHead = {
       },
     },
   },
-};
+}

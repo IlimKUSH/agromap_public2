@@ -1,6 +1,5 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 export const useProfileStore = create()(
   persist(
@@ -9,100 +8,106 @@ export const useProfileStore = create()(
       userData: null,
       osmToken: null,
       getCookie: () => {
-        return get().cookie;
+        return get().cookie
       },
       getUserData: () => {
-        return get().userData;
+        return get().userData
       },
       getOsmToken: () => {
-        return get().osmToken;
+        return get().osmToken
       },
       logIn: async (credentials) => {
-        let cookie = null;
+        let cookie = null
 
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(credentials),
-        });
+        })
 
-        if (!response.ok) return;
+        if (!response.ok) return
 
-        const setCookie = response.headers.get("cookie");
-        if (setCookie == null) return;
+        const setCookie = response.headers.get('cookie')
+        if (setCookie == null) return
 
-        cookie = setCookie;
+        cookie = setCookie
 
-        set(() => ({ cookie }));
-        await get().loadOsmToken();
-        await get().loadUserData();
+        set(() => ({ cookie }))
+        await get().loadOsmToken()
+        await get().loadUserData()
       },
       logInEsi: async (code) => {
-        let cookie= null;
-        let user= null;
+        let cookie = null
+        let user = null
 
         const response = await fetch(`/api/auth/esi-login?code=${code}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
 
-        if (!response.ok) return;
+        if (!response.ok) return
 
-        const setCookie = response.headers.get("cookie");
-        if (setCookie == null) return;
+        const setCookie = response.headers.get('cookie')
+        if (setCookie == null) return
 
-        cookie = setCookie;
-        user = await response.json();
-        if (user?.username == null) return;
+        cookie = setCookie
+        user = await response.json()
+        if (user?.username == null) return
 
-        set(() => ({ cookie, user }));
-        await get().loadUserData();
-        await get().loadOsmToken();
+        set(() => ({ cookie, user }))
+        await get().loadUserData()
+        await get().loadOsmToken()
       },
       loadUserData: async (user) => {
-        const cookie = get().cookie;
-        if (cookie == null) return;
+        const cookie = get().cookie
+        if (cookie == null) return
 
-        const response = await fetch("/api/auth/user-data", {
-          method: "GET",
-          headers: { "Content-Type": "application/json", "server-cookie": cookie },
-        });
+        const response = await fetch('/api/auth/user-data', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'server-cookie': cookie,
+          },
+        })
 
-        if (!response.ok) return;
+        if (!response.ok) return
 
-        const userData = await response.json();
+        const userData = await response.json()
 
-        if (userData == null) return;
+        if (userData == null) return
 
-        set(() => ({ userData }));
+        set(() => ({ userData }))
       },
       loadOsmToken: async () => {
-        const cookie = get().cookie;
-        if (cookie == null) return;
+        const cookie = get().cookie
+        if (cookie == null) return
 
-        const response = await fetch("/api/auth/osm/get-token", {
-          method: "GET",
-          headers: { "Content-Type": "application/json", "server-cookie": cookie },
-        });
+        const response = await fetch('/api/auth/osm/get-token', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'server-cookie': cookie,
+          },
+        })
 
-        if (!response.ok) return;
+        if (!response.ok) return
 
-        const osmToken = await response.json();
+        const osmToken = await response.json()
 
-        if (osmToken == null || osmToken.data == null) return;
+        if (osmToken == null || osmToken.data == null) return
 
-        set(() => ({ osmToken }));
+        set(() => ({ osmToken }))
       },
       logOut: () => {
         set(() => ({
           cookie: null,
           userData: null,
           osmToken: null,
-        }));
+        }))
       },
     }),
     {
-      name: "agromapProfile",
+      name: 'agromapProfile',
     }
   )
-);
+)

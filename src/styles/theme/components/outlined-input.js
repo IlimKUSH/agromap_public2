@@ -1,5 +1,5 @@
-import { inputBaseClasses } from '@mui/material/InputBase';
-import { outlinedInputClasses } from '@mui/material/OutlinedInput';
+import { inputBaseClasses } from '@mui/material/InputBase'
+import { outlinedInputClasses } from '@mui/material/OutlinedInput'
 
 export const MuiOutlinedInput = {
   defaultProps: { notched: false },
@@ -16,7 +16,8 @@ export const MuiOutlinedInput = {
       '&::before': {
         borderRadius: 'inherit',
         bottom: 0,
-        boxShadow: '0 0 0 calc(var(--Input-focused) * var(--Input-focusedThickness)) var(--Input-focusedHighlight)',
+        boxShadow:
+          '0 0 0 calc(var(--Input-focused) * var(--Input-focusedThickness)) var(--Input-focusedHighlight)',
         content: '" "',
         left: 0,
         pointerEvents: 'none',
@@ -30,7 +31,9 @@ export const MuiOutlinedInput = {
         '--Input-borderColor': 'var(--mui-palette-error-main)',
         '--Input-focusedHighlight': 'var(--mui-palette-error-main)',
       },
-      [`&.${outlinedInputClasses.disabled}`]: { '--Input-boxShadow': 'none' },
+      [`&.${outlinedInputClasses.disabled}`]: {
+        '--Input-boxShadow': 'none',
+      },
     },
     input: {
       height: 'auto',
@@ -41,4 +44,4 @@ export const MuiOutlinedInput = {
     },
     notchedOutline: { display: 'none' },
   },
-};
+}

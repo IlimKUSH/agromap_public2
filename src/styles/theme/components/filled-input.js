@@ -1,4 +1,4 @@
-import { inputBaseClasses } from '@mui/material/InputBase';
+import { inputBaseClasses } from '@mui/material/InputBase'
 
 export const MuiFilledInput = {
   defaultProps: { disableUnderline: true },
@@ -16,4 +16,4 @@ export const MuiFilledInput = {
       },
     },
   },
-};
+}

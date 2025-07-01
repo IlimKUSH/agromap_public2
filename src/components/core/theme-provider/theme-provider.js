@@ -1,21 +1,20 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles';
+import * as React from 'react'
+import CssBaseline from '@mui/material/CssBaseline'
+import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
 
-import { createTheme } from '@/styles/theme/create-theme';
+import { createTheme } from '@/styles/theme/create-theme'
 
-import EmotionCache from './emotion-cache';
-import { Rtl } from './rtl';
+import EmotionCache from './emotion-cache'
+import { Rtl } from './rtl'
 
 export function ThemeProvider({ children }) {
-
   const theme = createTheme({
-    primaryColor: "chateauGreen",
+    primaryColor: 'chateauGreen',
     // colorScheme: settings.colorScheme,
     // direction: settings.direction,
-  });
+  })
 
   return (
     <EmotionCache options={{ key: 'mui' }}>
@@ -25,5 +24,5 @@ export function ThemeProvider({ children }) {
         <Rtl>{children}</Rtl>
       </CssVarsProvider>
     </EmotionCache>
-  );
+  )
 }

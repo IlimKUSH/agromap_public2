@@ -1,1 +1,1 @@
-export const MuiStack = { defaultProps: { useFlexGap: true } };
+export const MuiStack = { defaultProps: { useFlexGap: true } }

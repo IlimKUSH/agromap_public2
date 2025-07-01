@@ -1,12 +1,11 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-
+import * as React from 'react'
 
 export function Rtl({ children, direction = 'ltr' }) {
   React.useEffect(() => {
-    document.dir = direction;
-  }, [direction]);
+    document.dir = direction
+  }, [direction])
 
-  return <React.Fragment>{children}</React.Fragment>;
+  return <React.Fragment>{children}</React.Fragment>
 }

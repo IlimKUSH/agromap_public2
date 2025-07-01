@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
+import * as React from 'react'
+import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 
 export const MuiAvatar = {
   defaultProps: { children: <UserIcon fontSize="var(--Icon-fontSize)" /> },
@@ -13,4 +13,4 @@ export const MuiAvatar = {
       width: 'var(--Avatar-size, 40px)',
     },
   },
-};
+}

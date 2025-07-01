@@ -11,4 +11,4 @@ export const MuiToggleButtonGroup = {
     middleButton: { borderRadius: '8px' },
     lastButton: { borderRadius: '8px' },
   },
-};
+}
