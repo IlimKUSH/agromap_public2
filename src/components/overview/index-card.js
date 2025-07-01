@@ -11,17 +11,41 @@ import { TrendUp as TrendUpIcon } from '@phosphor-icons/react/dist/ssr/TrendUp';
 import {Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import InfoIcon from '@mui/icons-material/Info';
+import useFetch from "@/hooks/use-fetch";
 
 
-export function Summary({ amount, diff, bg, icon: Icon, title, description, iconColor, titleSx }) {
+export function IndexCard({
+  amount,
+  diff,
+  bg,
+  icon: Icon,
+  title,
+  description,
+  iconColor,
+  titleSx,
+  onClick,
+  isActive,
+}) {
+  const bgColor = isActive ? bg ?? "#e0e0e0" : undefined;
+
   return (
-    <Card sx={{ backgroundColor: bg }}>
+    <Card
+      onClick={onClick}
+      sx={{
+        backgroundColor: bgColor,
+        cursor: "pointer",
+        transition: "0.2s ease",
+        "&:hover": {
+          boxShadow: `0 0 0 2px ${bg}`,
+        },
+      }}
+    >
       <CardContent sx={{ p: 1 }}>
         <Stack direction="row" spacing={3} sx={{ alignItems: 'center', ...titleSx }}>
           <Avatar
             sx={{
               '--Avatar-size': '48px',
-              bgcolor: bg ?? 'var(--mui-palette-background-paper)',
+              bgcolor: bgColor ?? 'var(--mui-palette-background-paper)',
               boxShadow: 'var(--mui-shadows-8)',
               color: iconColor,
             }}
@@ -29,13 +53,19 @@ export function Summary({ amount, diff, bg, icon: Icon, title, description, icon
             <Icon fontSize={20} />
           </Avatar>
           <div>
-            <Typography variant="h5" sx={{width: '150px'}}>{title } ≈ {new Intl.NumberFormat('en-US').format(amount)}</Typography>
+            <Typography variant="h5" sx={{ width: '170px' }}>
+              {title} ≈ {new Intl.NumberFormat('en-US').format(amount)}
+            </Typography>
           </div>
           <Box sx={{ width: "100%", display: "flex", justifyContent: "end" }}>
-            <Tooltip sx={{ fontSize: '14px' }}
-                     title={"Это один из самых популярных индексов, используемых для оценки состояния растительности. Он основан на разнице между отражением инфракрасного и красного света. Растения сильно поглощают красный свет и отражают инфракрасный, особенно если они здоровы и имеют хорошее покрытие."}>
+            <Tooltip
+              sx={{ fontSize: '14px' }}
+              title={
+                "Это один из самых популярных индексов, используемых для оценки состояния растительности..."
+              }
+            >
               <IconButton>
-                <InfoIcon sx={{ color: titleSx ? "#fff" : "" }} />
+                <InfoIcon sx={{ color: isActive ? "#fff" : "" }} />
               </IconButton>
             </Tooltip>
           </Box>

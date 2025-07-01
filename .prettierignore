@@ -1,13 +1,5 @@
-# Dependencies
-node_modules
-
-# Next.js
-.next
+# Ignore artifacts:
 build
-
-# Lock files
-package-lock.json
-
-# Misc
-dist
-public
+coverage
+node_modules
+next
