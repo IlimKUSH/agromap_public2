@@ -14,59 +14,58 @@ import InfoIcon from '@mui/icons-material/Info'
 import useFetch from '@/hooks/use-fetch'
 
 export function IndexCard({
-  amount,
-  diff,
-  bg,
-  icon: Icon,
   title,
+  value,
+  status,
   description,
-  iconColor,
-  titleSx,
-  onClick,
+  bgColor,
+  icon: Icon,
+  onCardClick,
   isActive,
 }) {
-  const bgColor = isActive ? (bg ?? '#e0e0e0') : undefined
+  const bgColorActive = isActive ? (bgColor ?? '#e0e0e0') : undefined
+  const titleColor = isActive ? '#ffffff' : undefined
+  const iconColor = isActive ? '#ffffff' : '#000000'
 
   return (
     <Card
-      onClick={onClick}
+      onClick={onCardClick}
       sx={{
-        backgroundColor: bgColor,
+        backgroundColor: bgColorActive,
         cursor: 'pointer',
         transition: '0.2s ease',
         '&:hover': {
-          boxShadow: `0 0 0 2px ${bg}`,
+          boxShadow: `0 0 0 2px ${bgColor}`,
         },
       }}
     >
       <CardContent sx={{ p: 1 }}>
         <Stack
-          direction="row"
           spacing={3}
-          sx={{ alignItems: 'center', ...titleSx }}
+          sx={{ alignItems: 'center', flexDirection: 'row', color: titleColor }}
         >
           <Avatar
             sx={{
               '--Avatar-size': '48px',
-              bgcolor: bgColor ?? 'var(--mui-palette-background-paper)',
+              bgcolor: bgColorActive ?? 'var(--mui-palette-background-paper)',
               boxShadow: 'var(--mui-shadows-8)',
               color: iconColor,
             }}
           >
             <Icon fontSize={20} />
           </Avatar>
-          <div>
-            <Typography variant="h5" sx={{ width: '170px' }}>
-              {title} ≈ {new Intl.NumberFormat('en-US').format(amount)}
-            </Typography>
-          </div>
           <Box
             sx={{
-              width: '100%',
               display: 'flex',
-              justifyContent: 'end',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
             }}
           >
+            <Typography variant="h5">
+              {title} ≈ {new Intl.NumberFormat('en-US').format(value)}
+            </Typography>
+
             <Tooltip
               sx={{ fontSize: '14px' }}
               title={
@@ -79,25 +78,29 @@ export function IndexCard({
             </Tooltip>
           </Box>
         </Stack>
+
         <Typography
           color="text.secondary"
           variant="body1"
-          sx={{ ...titleSx, mt: '8px' }}
+          sx={{ color: titleColor, mt: '8px' }}
         >
-          {description}
+          {status}
         </Typography>
       </CardContent>
+
       <Divider />
+
       <Box sx={{ p: '8px' }}>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <Typography
             color="text.secondary"
             variant="body2"
             fontWeight={600}
-            sx={{ ...titleSx }}
+            sx={{ color: titleColor }}
           >
-            {diff ?? 'Значения нормальные'}
+            {description ?? '---'}
           </Typography>
+          {/*Icon*/}
         </Stack>
       </Box>
     </Card>

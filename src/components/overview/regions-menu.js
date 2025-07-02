@@ -10,17 +10,17 @@ import Button from '@mui/material/Button'
 import { ArrowLeftIcon } from '@mui/x-date-pickers'
 
 export function RegionsMenu({
-  subscriptions,
+  regions,
+  activeDistrict,
+  setActiveDistrict,
   getDistrictsData,
   activeRegion,
   setActiveRegion,
-  activeDistrict,
-  setActiveDistrict,
   onBackToRegions,
 }) {
-  const isRegionView = !activeRegion && !activeDistrict
-  const title = isRegionView ? 'Области' : 'Районы'
-
+  const isRegion = !activeRegion && !activeDistrict
+  const title = isRegion ? 'Области' : 'Районы'
+  console.log(regions)
   return (
     <Card>
       <Box
@@ -32,7 +32,7 @@ export function RegionsMenu({
         }}
       >
         <Typography variant="subtitle1">{title}</Typography>
-        {!isRegionView && (
+        {!isRegion && (
           <Button
             color="secondary"
             startIcon={<ArrowLeftIcon />}
@@ -51,73 +51,84 @@ export function RegionsMenu({
 
       <CardContent sx={{ p: 0 }}>
         <List disablePadding>
-          {subscriptions?.map((subscription, index) => {
-            const isRegion =
-              !!subscription?.properties?.adm1_ru &&
-              !subscription?.properties?.adm2_ru
-            const isDistrict = !!subscription?.properties?.adm2_ru
-            const isActive =
-              (isRegion &&
-                activeRegion === subscription?.properties?.adm1_ru) ||
-              (isDistrict &&
-                activeDistrict === subscription?.properties?.adm2_ru)
+          {regions?.length > 0 ? (
+            regions.map((region, index) => {
+              const regionName = region.properties?.adm1_ru
+              const districtName = region.properties?.adm2_ru
 
-            const handleSelect = () => {
-              if (isRegion) {
-                setActiveRegion(subscription?.properties?.adm1_ru)
-                setActiveDistrict(null)
-                getDistrictsData(subscription?.properties?.adm1_ru)
-              } else if (isDistrict) {
-                setActiveDistrict(subscription?.properties?.adm2_ru)
-                setActiveRegion(null)
+              const isRegion = !!regionName && !districtName
+              const isDistrict = !!districtName
+              const isActive =
+                (isRegion && activeRegion === regionName) ||
+                (isDistrict && activeDistrict === districtName)
+
+              const handleSelect = () => {
+                if (isRegion) {
+                  setActiveRegion(regionName)
+                  setActiveDistrict(null)
+                  getDistrictsData(regionName)
+                } else if (isDistrict) {
+                  setActiveDistrict(districtName)
+                  setActiveRegion(null)
+                }
               }
-            }
 
-            return (
-              <ListItem
-                disableGutters
-                key={index}
-                selected={isActive}
-                sx={{
-                  p: '10px 30px',
-                  cursor: 'pointer',
-                  backgroundColor: isActive ? '#ffe0b2' : 'unset',
-                }}
-              >
-                <ListItemText
-                  disableTypography
-                  primary={
-                    <Typography
-                      noWrap
-                      variant="subtitle2"
-                      onClick={handleSelect}
-                      sx={
-                        isActive
-                          ? {
-                              fontWeight: 'bold',
-                              color: '#ff9800',
-                            }
-                          : {}
-                      }
-                    >
-                      {subscription?.properties?.adm2_ru ??
-                        subscription?.properties?.adm1_ru}
-                    </Typography>
-                  }
-                  // secondary={
-                  //   <Typography noWrap variant="caption">
-                  //     Площадь: {subscription.size} га.
-                  //   </Typography>
-                  // }
-                />
-                {/* <Typography variant="caption" sx={{ marginRight: "40px" }}>{subscription.prod}%</Typography> */}
-                {/* <Typography variant="caption">{subscription.size}</Typography> */}
-                {/* <IconButton>
+              return (
+                <ListItem
+                  disableGutters
+                  key={index}
+                  selected={isActive}
+                  sx={{
+                    p: '10px 30px',
+                    cursor: 'pointer',
+                    backgroundColor: isActive ? '#ffe0b2' : 'unset',
+                  }}
+                >
+                  <ListItemText
+                    disableTypography
+                    primary={
+                      <Typography
+                        noWrap
+                        variant="subtitle2"
+                        onClick={handleSelect}
+                        sx={
+                          isActive
+                            ? {
+                                fontWeight: 'bold',
+                                color: '#ff9800',
+                              }
+                            : {}
+                        }
+                      >
+                        {districtName ?? regionName}
+                      </Typography>
+                    }
+                    // secondary={
+                    //   <Typography noWrap variant="caption">
+                    //     Площадь: {subscription.size} га.
+                    //   </Typography>
+                    // }
+                  />
+                  {/* <Typography variant="caption" sx={{ marginRight: "40px" }}>{subscription.prod}%</Typography> */}
+                  {/* <Typography variant="caption">{subscription.size}</Typography> */}
+                  {/* <IconButton>
               <KeyboardArrowDownIcon weight="bold" />
             </IconButton> */}
-              </ListItem>
-            )
-          })}
+                </ListItem>
+              )
+            })
+          ) : (
+            <ListItem
+              disableGutters
+              sx={{
+                p: '10px 30px',
+              }}
+            >
+              <Typography variant="body1" color="text.secondary">
+                Данные отсутствуют
+              </Typography>
+            </ListItem>
+          )}
         </List>
       </CardContent>
     </Card>

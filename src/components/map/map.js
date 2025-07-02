@@ -10,9 +10,11 @@ import { ImageWMS } from 'ol/source'
 import ImageLayer from 'ol/layer/Image'
 import VectorSource from 'ol/source/Vector'
 import VectorLayer from 'ol/layer/Vector'
-import { Style, Fill, Stroke } from 'ol/style'
+import { Style, Fill, Stroke, Text } from 'ol/style'
 import { GeoJSON } from 'ol/format'
 import { useMapStore } from '@/stores/map'
+import TileLayer from 'ol/layer/Tile'
+import OSM from 'ol/source/OSM'
 
 const GEOSERVER_URL = 'https://agro.brisklyminds.com/geoserver/agromapv2/wms'
 const AGROMAP_LAYER = 'agromapv2:2024'
@@ -27,6 +29,9 @@ export function MapComponent({
   activeDistrict,
   setActiveDistrict,
   clearActive,
+  activeType,
+  indexData,
+  districtsIndexData,
 }) {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
@@ -40,8 +45,22 @@ export function MapComponent({
 
   const { setRegion, setDistricts } = useMapStore((state) => state)
 
+  const getNDVIByName = (name) => {
+    // if (!indexData) return null
+    const found = indexData?.find((item) => item?.name === name)
+    return found?.data?.find((d) => d.type === activeType)?.viIndex
+  }
+
+  const getDistrictNDVI = (name) => {
+    // if (!indexData) return null
+    const found = districtsIndexData?.find((item) => item?.name === name)
+    return found?.data?.find((d) => d.type === activeType)?.viIndex
+  }
+
+  // Style for regions, with labels for all regions
   const regionStyle = (feature) => {
     const regionName = feature.get('adm1_ru')
+
     if (activeRegion && regionName === activeRegion) {
       return new Style({
         stroke: new Stroke({
@@ -50,6 +69,15 @@ export function MapComponent({
         }),
         fill: new Fill({
           color: 'rgba(255, 140, 0, 0.3)',
+        }),
+        text: new Text({
+          text: getNDVIByName(regionName),
+          font: 'bold 16px Arial',
+          fill: new Fill({ color: '#209661' }),
+          padding: [2, 2, 2, 2],
+          backgroundFill: new Fill({ color: '#FFF' }),
+          backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
+          stroke: new Stroke({ color: '#fff', width: 3 }),
         }),
       })
     }
@@ -62,6 +90,15 @@ export function MapComponent({
         fill: new Fill({
           color: 'rgba(0, 123, 255, 0.1)',
         }),
+        text: new Text({
+          text: getNDVIByName(regionName),
+          font: 'bold 16px Arial',
+          fill: new Fill({ color: '#209661' }),
+          padding: [2, 2, 2, 2],
+          backgroundFill: new Fill({ color: '#FFF' }),
+          backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
+          stroke: new Stroke({ color: '#fff', width: 3 }),
+        }),
       })
     }
     return new Style({
@@ -72,11 +109,29 @@ export function MapComponent({
       fill: new Fill({
         color: 'rgba(0, 123, 255, 0.1)',
       }),
+      text: new Text({
+        text: getNDVIByName(regionName),
+        font: 'bold 16px Arial',
+        fill: new Fill({ color: '#209661' }),
+        padding: [2, 2, 2, 2],
+        backgroundFill: new Fill({ color: '#FFF' }),
+        backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
+        stroke: new Stroke({ color: '#fff', width: 3 }),
+      }),
     })
   }
 
+  // Style for districts, with labels for all districts
   const districtStyle = (feature) => {
     const districtName = feature.get('adm2_ru')
+    // const district = indexData.find((item) =>
+    //   item.name.toLowerCase().includes(regionName.toLowerCase())
+    // )
+    // console.log(region)
+    // const viObject = region?.data?.find((d) => d.type === activeType)
+    // console.log('activeType', viObject)
+    //
+    // const labelText = viObject?.viIndex
     if (activeDistrict && districtName === activeDistrict) {
       return new Style({
         stroke: new Stroke({
@@ -85,6 +140,14 @@ export function MapComponent({
         }),
         fill: new Fill({
           color: 'rgba(0, 0, 255, 0.2)',
+        }),
+        text: new Text({
+          text: `${districtName}\nNDVI: ${getNDVIByName(districtName) ?? '—'}`,
+          font: 'bold 12px Arial',
+          fill: new Fill({ color: '#209661' }),
+          stroke: new Stroke({ color: '#fff', width: 3 }),
+          overflow: true,
+          textAlign: 'center',
         }),
       })
     }
@@ -96,12 +159,25 @@ export function MapComponent({
       fill: new Fill({
         color: 'rgba(255, 0, 0, 0.1)',
       }),
+      text: new Text({
+        text: getDistrictNDVI(districtName),
+        font: 'bold 16px Arial',
+        fill: new Fill({ color: '#209661' }),
+        padding: [2, 2, 2, 2],
+        backgroundFill: new Fill({ color: '#FFF' }),
+        backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
+        stroke: new Stroke({ color: '#fff', width: 3 }),
+      }),
     })
   }
 
   useEffect(() => {
     let map
     if (mapRef.current && !mapInstanceRef.current) {
+      const osmLayer = new TileLayer({
+        source: new OSM(),
+      })
+
       wmsSourceRef.current = new ImageWMS({
         url: GEOSERVER_URL,
         params: {
@@ -120,7 +196,7 @@ export function MapComponent({
 
       map = new Map({
         target: mapRef.current,
-        layers: [geoServerLayer],
+        layers: [osmLayer, geoServerLayer],
         view: new View({
           center: fromLonLat([74.6, 41.3]),
           zoom: 7,

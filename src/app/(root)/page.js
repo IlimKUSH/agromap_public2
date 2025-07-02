@@ -29,6 +29,10 @@ import EntryModal from '@/components/modules/entry/entry-modal'
 import useFetch from '@/hooks/use-fetch'
 import { useMapStore } from '@/stores/map'
 import { use, useEffect, useState } from 'react'
+import { ConnectingAirportsOutlined } from '@mui/icons-material'
+import Avatar from '@mui/material/Avatar'
+import InfoIcon from '@mui/icons-material/Info'
+import Divider from '@mui/material/Divider'
 
 export default function Page() {
   const { i18n } = useTranslation()
@@ -47,19 +51,13 @@ export default function Page() {
   const { getRegion, getDistricts, setDistricts } = useMapStore(
     (state) => state
   )
-  const { data: regionsData, update: fetchRegions } = useFetch(
-    '/api/map/regions',
-    'GET'
-  )
+  const { data: regionsData } = useFetch('/api/map/regions', 'GET')
   const { data: indexes } = useFetch('/api/map/dictionaries/index', 'GET')
   const { data: statuses } = useFetch('/api/map/dictionaries/status', 'GET')
 
   const { data: districtsData, update: fetchDistricts } = useFetch('', 'GET')
 
-  const { data: index, update: fetchIndexes } = useFetch(
-    '/api/map/index?type=region&name=Чуйская',
-    'GET'
-  )
+  const { data: index, update: fetchIndexes } = useFetch('', 'GET')
 
   const getDistrictsData = async (regionName) => {
     await fetchDistricts(`/api/map/districts?regionName=${regionName}`)
@@ -89,6 +87,58 @@ export default function Page() {
     setActiveDistrict(null)
     setDistricts(regionsData)
   }
+
+  const regionNames = [
+    'Чуйская',
+    'Таласская',
+    'Баткенская',
+    'Ошская',
+    'Джалал-Абадская',
+    'Иссык-Кульская',
+    'Нарынская',
+  ]
+
+  const [allRegionIndexes, setAllRegionIndexes] = useState([])
+
+  const fetchAllRegionIndexes = async () => {
+    const promises = regionNames.map(async (name) => {
+      const data = await fetchIndexes(
+        `/api/map/index?type=region&name=${encodeURIComponent(name)}`
+      )
+      return { name, data }
+    })
+    const results = await Promise.all(promises)
+    setAllRegionIndexes(results)
+  }
+
+  // Example: fetch on mount
+  useEffect(() => {
+    fetchAllRegionIndexes()
+    // eslint-disable-next-line
+  }, [])
+
+  const region = allRegionIndexes.find(
+    (region) => region.name === (activeRegion || 'Чуйская')
+  )
+
+  const [allDistrictIndexes, setAllDistrictIndexes] = useState([])
+
+  const fetchAllDistrictIndexes = async () => {
+    const promises = districtsData.features?.map(async (feature) => {
+      const data = await fetchIndexes(
+        `/api/map/index?type=district&name=${encodeURIComponent(feature.properties.adm2_ru)}`
+      )
+      return { name: feature.properties.adm2_ru, data }
+    })
+    const results = await Promise.all(promises)
+    setAllDistrictIndexes(results)
+  }
+
+  useEffect(() => {
+    if (districtsData) {
+      fetchAllDistrictIndexes()
+    }
+  }, [districtsData])
 
   return (
     <Box
@@ -175,43 +225,60 @@ export default function Page() {
           </Stack>
         </Stack>
 
-        <Grid container spacing={2} sx={{ position: 'relative' }}>
-          {index?.map((i) => {
-            const matchedIndex = indexes?.find((ix) => ix.value === i.type)
-            const matchedStatus = statuses?.find((ix) => ix.value === i.status)
-            const isActive = activeType === i.type
+        <Grid container spacing={2}>
+          {region ? (
+            region?.data?.map((i) => {
+              const matchedIndex = indexes?.find((ix) => ix.value === i.type)
+              const matchedStatus = statuses?.find(
+                (ix) => ix.value === i.status
+              )
+              const isActive = activeType === i.type
 
-            return (
-              <Grid key={i.type} item md={2.4} xs={12}>
-                <IndexCard
-                  amount={i.viIndex}
-                  diff={i.interpretation}
-                  bg={indexColors[i.type]}
-                  description={matchedStatus?.title_ru ?? i.status}
-                  icon={Check}
-                  iconColor={isActive ? '#ffffff' : '#000000'}
-                  title={matchedIndex?.title_ru ?? i.type}
-                  titleSx={{
-                    color: isActive ? '#ffffff' : undefined,
-                  }}
-                  onClick={() => setActiveType(i.type)}
-                  isActive={isActive}
-                />
-              </Grid>
-            )
-          })}
+              return (
+                <Grid key={i.type} item md={2.4} xs={12}>
+                  <IndexCard
+                    icon={Check}
+                    title={matchedIndex?.title_ru ?? i.type}
+                    value={i.viIndex}
+                    description={i.interpretation}
+                    status={matchedStatus?.title_ru ?? i.status}
+                    bgColor={indexColors[i.type]}
+                    onCardClick={() => setActiveType(i.type)}
+                    isActive={isActive}
+                  />
+                </Grid>
+              )
+            })
+          ) : (
+            <Grid item md={12} xs={12}>
+              <Card
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '135px',
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Данные отсутствуют
+                </Typography>
+              </Card>
+            </Grid>
+          )}
         </Grid>
 
         <Grid item md={12} xs={12}>
           <Card>
             <CardHeader
+              title={getRegion() ?? 'Кыргызская Республика'}
+              sx={{
+                p: 2,
+                '&': {
+                  width: '865px',
+                },
+              }}
               action={
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  spacing={1}
-                  sx={{ width: '100%' }}
-                >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle1">Фильтр по:</Typography>
                   <Select
                     defaultValue="культурам"
@@ -233,33 +300,25 @@ export default function Page() {
                       width: '240px',
                     }}
                   >
-                    <Option value="Период">Период</Option>
                     <Option value="за 2024">за 2024</Option>
                   </Select>
-                </Stack>
+                </Box>
               }
-              sx={{
-                p: 2,
-                '&': {
-                  width: '865px',
-                },
-              }}
-              title={getRegion() ?? 'Кыргызская Республика'}
             />
             <CardContent sx={{ p: 0, flex: 1 }}>
               <Grid container spacing={2}>
                 <Grid item md={2} xs={12}>
                   <RegionsMenu
-                    subscriptions={
+                    regions={
                       !activeRegion && !activeDistrict
                         ? regionsData?.features
                         : getDistricts()?.features
                     }
+                    activeDistrict={activeDistrict}
+                    setActiveDistrict={setActiveDistrict}
                     getDistrictsData={getDistrictData}
                     activeRegion={activeRegion}
                     setActiveRegion={setActiveRegion}
-                    activeDistrict={activeDistrict}
-                    setActiveDistrict={setActiveDistrict}
                     onBackToRegions={handleBackToRegions}
                   />
                 </Grid>
@@ -274,6 +333,9 @@ export default function Page() {
                     activeDistrict={activeDistrict}
                     setActiveDistrict={setActiveDistrict}
                     clearActive={clearActive}
+                    activeType={activeType}
+                    indexData={allRegionIndexes}
+                    districtsIndexData={allDistrictIndexes}
                   />
                 </Grid>
                 <Grid item md={2} xs={12}>
