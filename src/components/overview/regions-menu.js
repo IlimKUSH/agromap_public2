@@ -17,6 +17,7 @@ export function RegionsMenu({
   activeRegion,
   setActiveRegion,
   onBackToRegions,
+  onRegionSelect,
 }) {
   const isRegion = !activeRegion && !activeDistrict
   const title = isRegion ? 'Области' : 'Районы'
@@ -64,9 +65,13 @@ export function RegionsMenu({
 
               const handleSelect = () => {
                 if (isRegion) {
-                  setActiveRegion(regionName)
-                  setActiveDistrict(null)
-                  getDistrictsData(regionName)
+                  if (onRegionSelect) {
+                    onRegionSelect(regionName)
+                  } else {
+                    setActiveRegion(regionName)
+                    setActiveDistrict(null)
+                    getDistrictsData(regionName)
+                  }
                 } else if (isDistrict) {
                   setActiveDistrict(districtName)
                   setActiveRegion(null)

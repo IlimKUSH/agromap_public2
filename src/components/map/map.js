@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import { defaults as defaultControls } from 'ol/control'
@@ -19,7 +19,7 @@ import OSM from 'ol/source/OSM'
 const GEOSERVER_URL = 'https://agro.brisklyminds.com/geoserver/agromapv2/wms'
 const AGROMAP_LAYER = 'agromapv2:2024'
 
-export function MapComponent({
+export const MapComponent = forwardRef(({
   regionsData,
   districtsData,
   getDistrictsData,
@@ -32,7 +32,8 @@ export function MapComponent({
   activeType,
   indexData,
   districtsIndexData,
-}) {
+  indexColors,
+}, ref) => {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const wmsSourceRef = useRef(null)
@@ -44,6 +45,7 @@ export function MapComponent({
   const [initialHighlight, setInitialHighlight] = useState('Чуйская')
 
   const { setRegion, setDistricts } = useMapStore((state) => state)
+
 
   const getNDVIByName = (name) => {
     // if (!indexData) return null
@@ -57,10 +59,13 @@ export function MapComponent({
     return found?.data?.find((d) => d.type === activeType)?.viIndex
   }
 
+  const getIndexColor = (type) => {
+    return indexColors?.[type] || '#209661'
+  }
+
   // Style for regions, with labels for all regions
   const regionStyle = (feature) => {
     const regionName = feature.get('adm1_ru')
-
     if (activeRegion && regionName === activeRegion) {
       return new Style({
         stroke: new Stroke({
@@ -73,7 +78,7 @@ export function MapComponent({
         text: new Text({
           text: getNDVIByName(regionName),
           font: 'bold 16px Arial',
-          fill: new Fill({ color: '#209661' }),
+          fill: new Fill({ color: getIndexColor(activeType) }),
           padding: [2, 2, 2, 2],
           backgroundFill: new Fill({ color: '#FFF' }),
           backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
@@ -93,7 +98,7 @@ export function MapComponent({
         text: new Text({
           text: getNDVIByName(regionName),
           font: 'bold 16px Arial',
-          fill: new Fill({ color: '#209661' }),
+          fill: new Fill({ color: getIndexColor(activeType) }),
           padding: [2, 2, 2, 2],
           backgroundFill: new Fill({ color: '#FFF' }),
           backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
@@ -112,7 +117,7 @@ export function MapComponent({
       text: new Text({
         text: getNDVIByName(regionName),
         font: 'bold 16px Arial',
-        fill: new Fill({ color: '#209661' }),
+        fill: new Fill({ color: getIndexColor(activeType) }),
         padding: [2, 2, 2, 2],
         backgroundFill: new Fill({ color: '#FFF' }),
         backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
@@ -124,14 +129,7 @@ export function MapComponent({
   // Style for districts, with labels for all districts
   const districtStyle = (feature) => {
     const districtName = feature.get('adm2_ru')
-    // const district = indexData.find((item) =>
-    //   item.name.toLowerCase().includes(regionName.toLowerCase())
-    // )
-    // console.log(region)
-    // const viObject = region?.data?.find((d) => d.type === activeType)
-    // console.log('activeType', viObject)
-    //
-    // const labelText = viObject?.viIndex
+    const label = getDistrictNDVI(districtName)
     if (activeDistrict && districtName === activeDistrict) {
       return new Style({
         stroke: new Stroke({
@@ -142,9 +140,9 @@ export function MapComponent({
           color: 'rgba(0, 0, 255, 0.2)',
         }),
         text: new Text({
-          text: `${districtName}\nNDVI: ${getNDVIByName(districtName) ?? '—'}`,
+          text: label,
           font: 'bold 12px Arial',
-          fill: new Fill({ color: '#209661' }),
+          fill: new Fill({ color: getIndexColor(activeType) }),
           stroke: new Stroke({ color: '#fff', width: 3 }),
           overflow: true,
           textAlign: 'center',
@@ -160,13 +158,52 @@ export function MapComponent({
         color: 'rgba(255, 0, 0, 0.1)',
       }),
       text: new Text({
-        text: getDistrictNDVI(districtName),
+        text: label,
         font: 'bold 16px Arial',
-        fill: new Fill({ color: '#209661' }),
+        fill: new Fill({ color: getIndexColor(activeType) }),
         padding: [2, 2, 2, 2],
         backgroundFill: new Fill({ color: '#FFF' }),
         backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
         stroke: new Stroke({ color: '#fff', width: 3 }),
+      }),
+    })
+  }
+
+  // Highlight style for regions (with label)
+  const regionHighlightStyle = (feature) => {
+    const regionName = feature.get('adm1_ru')
+    return new Style({
+      stroke: new Stroke({
+        color: 'rgba(255, 204, 0, 0.8)',
+        width: 3,
+      }),
+      fill: new Fill({ color: 'rgba(255, 204, 0, 0.4)' }),
+      text: new Text({
+        text: getNDVIByName(regionName),
+        font: 'bold 16px Arial',
+        fill: new Fill({ color: getIndexColor(activeType) }),
+        padding: [2, 2, 2, 2],
+        backgroundFill: new Fill({ color: '#FFF' }),
+        backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
+        stroke: new Stroke({ color: '#fff', width: 3 }),
+      }),
+    })
+  }
+
+  // Highlight style for districts (with label)
+  const districtHighlightStyle = (feature) => {
+    const districtName = feature.get('adm2_ru')
+    const label = getDistrictNDVI(districtName)
+    return new Style({
+      stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.8)', width: 3 }),
+      fill: new Fill({ color: 'rgba(255, 0, 0, 0.2)' }),
+      text: new Text({
+        text: label,
+        font: 'bold 12px Arial',
+        fill: new Fill({ color: getIndexColor(activeType) }),
+        stroke: new Stroke({ color: '#fff', width: 3 }),
+        overflow: true,
+        textAlign: 'center',
       }),
     })
   }
@@ -210,19 +247,6 @@ export function MapComponent({
 
       mapInstanceRef.current = map
 
-      const highlightRegionStyle = new Style({
-        stroke: new Stroke({
-          color: 'rgba(255, 204, 0, 0.8)',
-          width: 3,
-        }),
-        fill: new Fill({ color: 'rgba(255, 204, 0, 0.4)' }),
-      })
-
-      const highlightDistrictStyle = new Style({
-        stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.8)', width: 3 }),
-        fill: new Fill({ color: 'rgba(255, 0, 0, 0.2)' }),
-      })
-
       function handlePointerMove(e) {
         if (e.dragging) return
         const pixel = map.getEventPixel(e.originalEvent)
@@ -243,7 +267,7 @@ export function MapComponent({
           highlightedFeatureRef.current = null
         }
         if (regionFeature) {
-          regionFeature.setStyle(highlightRegionStyle)
+          regionFeature.setStyle(regionHighlightStyle(regionFeature))
           highlightedFeatureRef.current = regionFeature
           hasFeature = true
         }
@@ -262,7 +286,7 @@ export function MapComponent({
           highlightedDistrictRef.current = null
         }
         if (districtFeature) {
-          districtFeature.setStyle(highlightDistrictStyle)
+          districtFeature.setStyle(districtHighlightStyle(districtFeature))
           highlightedDistrictRef.current = districtFeature
           hasFeature = true
         }
@@ -291,6 +315,10 @@ export function MapComponent({
           setActiveDistrict(districtName)
           setActiveRegion(null)
           getIndexes('district', districtName)
+          // Zoom to district
+          const geometry = districtFeature.getGeometry()
+          const extent = geometry.getExtent()
+          map.getView().fit(extent, { duration: 500, maxZoom: 12, padding: [40, 40, 40, 40] })
           return
         }
         // Region click
@@ -312,6 +340,10 @@ export function MapComponent({
           if (initialHighlight && regionName !== initialHighlight) {
             setInitialHighlight(null)
           }
+          // Zoom to region
+          const geometry = regionFeature.getGeometry()
+          const extent = geometry.getExtent()
+          map.getView().fit(extent, { duration: 500, maxZoom: 10, padding: [40, 40, 40, 40] })
         }
       }
 
@@ -348,7 +380,7 @@ export function MapComponent({
       vectorLayerRef.current = vectorLayer
       mapInstanceRef.current.addLayer(vectorLayer)
     }
-  }, [regionsData, initialHighlight, activeRegion])
+  }, [regionsData, initialHighlight, activeRegion, indexData, activeType])
 
   useEffect(() => {
     if (mapInstanceRef.current && districtsData) {
@@ -368,7 +400,20 @@ export function MapComponent({
       districtsLayerRef.current = vectorLayer
       mapInstanceRef.current.addLayer(vectorLayer)
     }
-  }, [districtsData, activeDistrict])
+  }, [districtsData, activeDistrict, districtsIndexData, activeType])
+
+  useImperativeHandle(ref, () => ({
+    zoomToRegion: (regionName) => {
+      if (!mapInstanceRef.current || !vectorLayerRef.current) return
+      const features = vectorLayerRef.current.getSource().getFeatures()
+      const feature = features.find(f => f.get('adm1_ru') === regionName)
+      if (feature) {
+        const geometry = feature.getGeometry()
+        const extent = geometry.getExtent()
+        mapInstanceRef.current.getView().fit(extent, { duration: 500, maxZoom: 10, padding: [40, 40, 40, 40] })
+      }
+    }
+  }))
 
   return (
     <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -439,4 +484,4 @@ export function MapComponent({
       </Box>
     </Box>
   )
-}
+})

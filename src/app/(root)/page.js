@@ -28,7 +28,7 @@ import { Option } from '@/components/core/option'
 import EntryModal from '@/components/modules/entry/entry-modal'
 import useFetch from '@/hooks/use-fetch'
 import { useMapStore } from '@/stores/map'
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import { ConnectingAirportsOutlined } from '@mui/icons-material'
 import Avatar from '@mui/material/Avatar'
 import InfoIcon from '@mui/icons-material/Info'
@@ -139,6 +139,18 @@ export default function Page() {
       fetchAllDistrictIndexes()
     }
   }, [districtsData])
+console.log(allDistrictIndexes)
+
+  const mapRef = useRef()
+
+  const handleRegionSelect = (regionName) => {
+    setActiveRegion(regionName)
+    setActiveDistrict(null)
+    getDistrictData(regionName)
+    if (mapRef.current && mapRef.current.zoomToRegion) {
+      mapRef.current.zoomToRegion(regionName)
+    }
+  }
 
   return (
     <Box
@@ -320,10 +332,12 @@ export default function Page() {
                     activeRegion={activeRegion}
                     setActiveRegion={setActiveRegion}
                     onBackToRegions={handleBackToRegions}
+                    onRegionSelect={handleRegionSelect}
                   />
                 </Grid>
                 <Grid item md={8} xs={12}>
                   <MapComponent
+                    ref={mapRef}
                     regionsData={regionsData}
                     districtsData={districtsData}
                     getDistrictsData={getDistrictsData}
@@ -336,6 +350,7 @@ export default function Page() {
                     activeType={activeType}
                     indexData={allRegionIndexes}
                     districtsIndexData={allDistrictIndexes}
+                    indexColors={indexColors}
                   />
                 </Grid>
                 <Grid item md={2} xs={12}>
@@ -398,93 +413,6 @@ export default function Page() {
             </CardContent>
           </Card>
         </Grid>
-
-        {/*  <Grid container spacing={2} sx={{position: 'relative'}}>*/}
-
-        {/*    /!* MAP *!/*/}
-        {/*    <Grid item md={2} xs={12}>*/}
-        {/*      <Regions*/}
-        {/*        subscriptions={(!activeRegion && !activeDistrict) ? regionsData?.features : getDistricts()?.features}*/}
-        {/*        getDistrictsData={getDistrictData}*/}
-        {/*        activeRegion={activeRegion}*/}
-        {/*        setActiveRegion={setActiveRegion}*/}
-        {/*        activeDistrict={activeDistrict}*/}
-        {/*        setActiveDistrict={setActiveDistrict}*/}
-        {/*        onBackToRegions={handleBackToRegions}*/}
-        {/*      />*/}
-        {/*    </Grid>*/}
-        {/*  */}
-        {/*    <Grid item md={8} xs={12}>*/}
-        {/*      <MapComponent*/}
-        {/*        regionsData={regionsData}*/}
-        {/*        districtsData={districtsData}*/}
-        {/*        getDistrictsData={getDistrictsData}*/}
-        {/*        getIndexes={getIndexes}*/}
-        {/*        activeRegion={activeRegion}*/}
-        {/*        setActiveRegion={setActiveRegion}*/}
-        {/*        activeDistrict={activeDistrict}*/}
-        {/*        setActiveDistrict={setActiveDistrict}*/}
-        {/*        clearActive={clearActive}*/}
-        {/*      />*/}
-        {/*    </Grid>*/}
-
-        {/*    <Grid item md={2} xs={12}>*/}
-        {/*      <Subscriptions2*/}
-        {/*        subscriptions={[*/}
-        {/*          {*/}
-        {/*            width1: '50%',*/}
-        {/*            width2: '20%',*/}
-        {/*            width3: '30%',*/}
-        {/*            size1: '260',*/}
-        {/*            size2: '216',*/}
-        {/*            size3: '109',*/}
-        {/*            id: 'asd',*/}
-        {/*            title: 'Зерновые - 2,0 тыс. га.',*/}
-        {/*          },*/}
-        {/*          {*/}
-        {/*            width1: '10%',*/}
-        {/*            width2: '10%',*/}
-        {/*            width3: '80%',*/}
-        {/*            size1: '260',*/}
-        {/*            size2: '216',*/}
-        {/*            size3: '109',*/}
-        {/*            id: 'vercel',*/}
-        {/*            title: 'Зернобобовые - 1,2 тыс. га.',*/}
-        {/*          },*/}
-        {/*          {*/}
-        {/*            width1: '30%',*/}
-        {/*            width2: '30%',*/}
-        {/*            width3: '40%',*/}
-        {/*            size1: '177',*/}
-        {/*            size2: '180',*/}
-        {/*            size3: '220',*/}
-        {/*            id: 'auth0',*/}
-        {/*            title: 'Кормовые - 0,6 тыс. га.',*/}
-        {/*          },*/}
-        {/*          {*/}
-        {/*            width1: '35%',*/}
-        {/*            width2: '35%',*/}
-        {/*            width3: '30%',*/}
-        {/*            size1: '260',*/}
-        {/*            size2: '259',*/}
-        {/*            size3: '207',*/}
-        {/*            id: 'google_cloud',*/}
-        {/*            title: 'Масличные - 0,4 тыс. га.',*/}
-        {/*          },*/}
-        {/*          {*/}
-        {/*            width1: '70%',*/}
-        {/*            width2: '15%',*/}
-        {/*            width3: '15%',*/}
-        {/*            size1: '548',*/}
-        {/*            size2: '149',*/}
-        {/*            size3: '149',*/}
-        {/*            id: 'stripe',*/}
-        {/*            title: 'Овощные - 0.2 тыс. га.',*/}
-        {/*          },*/}
-        {/*        ]}*/}
-        {/*      />*/}
-        {/*    </Grid>*/}
-        {/*</Grid>*/}
       </Stack>
     </Box>
   )
