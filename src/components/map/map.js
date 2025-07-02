@@ -485,3 +485,5 @@ export const MapComponent = forwardRef(({
     </Box>
   )
 })
+
+MapComponent.displayName = 'MapComponent'
