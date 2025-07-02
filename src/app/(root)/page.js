@@ -33,6 +33,7 @@ import { ConnectingAirportsOutlined } from '@mui/icons-material'
 import Avatar from '@mui/material/Avatar'
 import InfoIcon from '@mui/icons-material/Info'
 import Divider from '@mui/material/Divider'
+import SoilPieChart from '@/components/charts/SoilPieChart'
 
 export default function Page() {
   const { i18n } = useTranslation()
@@ -58,6 +59,7 @@ export default function Page() {
   const { data: districtsData, update: fetchDistricts } = useFetch('', 'GET')
 
   const { data: index, update: fetchIndexes } = useFetch('', 'GET')
+  const { data: soil, update: fetchSoil } = useFetch('', 'GET')
 
   const getDistrictsData = async (regionName) => {
     await fetchDistricts(`/api/map/districts?regionName=${regionName}`)
@@ -65,8 +67,9 @@ export default function Page() {
 
   const getIndexes = async (type, name) => {
     await fetchIndexes(`/api/map/index?type=${type}&name=${name}`)
+    await fetchSoil(`/api/map/soil?type=${type}&name=${name}`)
   }
-
+console.log(soil)
   const getDistrictData = async (regionName) => {
     if (regionName) {
       await getDistrictsData(regionName)
@@ -111,10 +114,9 @@ export default function Page() {
     setAllRegionIndexes(results)
   }
 
-  // Example: fetch on mount
   useEffect(() => {
     fetchAllRegionIndexes()
-    // eslint-disable-next-line
+    fetchSoil(`/api/map/soil?type=region&name=Чуйская`)
   }, [])
 
   const region = allRegionIndexes.find(
@@ -293,7 +295,7 @@ console.log(allDistrictIndexes)
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle1">Фильтр по:</Typography>
                   <Select
-                    defaultValue="культурам"
+                    defaultValue="Тип почвы"
                     name="Тип почвы"
                     sx={{
                       maxWidth: '100%',
@@ -317,7 +319,7 @@ console.log(allDistrictIndexes)
                 </Box>
               }
             />
-            <CardContent sx={{ p: 0, flex: 1 }}>
+            <CardContent sx={{ p: 0, flex: 1, height: '100%' }}>
               <Grid container spacing={2}>
                 <Grid item md={2} xs={12}>
                   <RegionsMenu
@@ -335,7 +337,7 @@ console.log(allDistrictIndexes)
                     onRegionSelect={handleRegionSelect}
                   />
                 </Grid>
-                <Grid item md={8} xs={12}>
+                <Grid item md={8} xs={12} sx={{ height: '100vh', minHeight: 0 }}>
                   <MapComponent
                     ref={mapRef}
                     regionsData={regionsData}
@@ -354,60 +356,7 @@ console.log(allDistrictIndexes)
                   />
                 </Grid>
                 <Grid item md={2} xs={12}>
-                  <Subscriptions2
-                    subscriptions={[
-                      {
-                        width1: '50%',
-                        width2: '20%',
-                        width3: '30%',
-                        size1: '260',
-                        size2: '216',
-                        size3: '109',
-                        id: 'asd',
-                        title: 'Зерновые - 2,0 тыс. га.',
-                      },
-                      {
-                        width1: '10%',
-                        width2: '10%',
-                        width3: '80%',
-                        size1: '260',
-                        size2: '216',
-                        size3: '109',
-                        id: 'vercel',
-                        title: 'Зернобобовые - 1,2 тыс. га.',
-                      },
-                      {
-                        width1: '30%',
-                        width2: '30%',
-                        width3: '40%',
-                        size1: '177',
-                        size2: '180',
-                        size3: '220',
-                        id: 'auth0',
-                        title: 'Кормовые - 0,6 тыс. га.',
-                      },
-                      {
-                        width1: '35%',
-                        width2: '35%',
-                        width3: '30%',
-                        size1: '260',
-                        size2: '259',
-                        size3: '207',
-                        id: 'google_cloud',
-                        title: 'Масличные - 0,4 тыс. га.',
-                      },
-                      {
-                        width1: '70%',
-                        width2: '15%',
-                        width3: '15%',
-                        size1: '548',
-                        size2: '149',
-                        size3: '149',
-                        id: 'stripe',
-                        title: 'Овощные - 0.2 тыс. га.',
-                      },
-                    ]}
-                  />
+                  <SoilPieChart data={soil?.slice(0, 5)} />
                 </Grid>
               </Grid>
             </CardContent>
