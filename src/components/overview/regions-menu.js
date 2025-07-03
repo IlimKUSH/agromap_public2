@@ -23,7 +23,7 @@ export function RegionsMenu({
   const title = isRegion ? 'Области' : 'Районы'
   console.log(regions)
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <Box
         sx={{
           display: 'flex',
@@ -87,6 +87,9 @@ export function RegionsMenu({
                     p: '10px 30px',
                     cursor: 'pointer',
                     backgroundColor: isActive ? '#ffe0b2' : 'unset',
+                    '&:hover': {
+                      backgroundColor: isActive ? '#ffe0b2' : '#f5f5f5',
+                    },
                   }}
                 >
                   <ListItemText

@@ -1,92 +1,119 @@
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { Tooltip as MuiTooltip } from '@mui/material'
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#bb2720', '#209661', '#0c44ae', '#8884d8', '#a28fd0']
-
-function OnlyValueTooltip({ active, payload }) {
-  if (active && payload && payload.length) {
-    const value = payload[0].value
-    return (
-      <div style={{ background: 'white', padding: 8, border: '1px solid #ccc', borderRadius: 4 }}>
-        <span style={{ fontWeight: 'bold' }}>{value.toLocaleString()}</span>
-      </div>
-    )
-  }
-  return null
-}
-
-// Custom legend with ellipsis and tooltip, using flexbox for full width
-function CustomLegend({ payload }) {
-  return (
-    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', width: '100%' }}>
-      {payload.map((entry, index) => {
-        const name = entry.value
-        return (
-            <MuiTooltip 
-            key={`item-${index}`}
-             title={name}>
-<li
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              marginBottom: 4,
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-block',
-                width: 12,
-                height: 12,
-                backgroundColor: entry.color,
-                marginRight: 8,
-                borderRadius: 2,
-                flex: '0 0 auto',
-              }}
-            />
-            <span
-              title={name}
-              style={{
-                flex: '1 1 0',
-                minWidth: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                fontSize: 13,
-              }}
-            >
-              {name}
-            </span>
-          </li>
-            </MuiTooltip>
-        )
-      })}
-    </ul>
-  )
-}
+import React from 'react'
+import Box from '@mui/material/Box'
+import ReactApexCharts from 'react-apexcharts'
+import Typography from '@mui/material/Typography'
 
 export default function SoilPieChart({ data }) {
-  if (!data || !Array.isArray(data) || data.length === 0) {
+  if (!Array.isArray(data) || data.length === 0) {
     return <div>Нет данных по почвам</div>
   }
+
+  const labels = data.map((item) => item.name)
+  const series = data.map((item) => item.totalAreaHa)
+
+  const chartOptions = {
+    chart: {
+      type: 'polarArea',
+      height: '100%',
+    },
+    labels,
+    fill: {
+      opacity: 1,
+    },
+    stroke: {
+      width: 1,
+      colors: undefined,
+    },
+    yaxis: {
+      show: false,
+    },
+    tooltip: {
+      custom: function({series, seriesIndex, dataPointIndex, w}) {
+        const label = w.globals.labels[seriesIndex];
+        const value = series[seriesIndex];
+        const maxLength = 30;
+        const truncatedLabel = label.length > maxLength
+          ? label.substring(0, maxLength) + '...'
+          : label;
+        return '<div class="arrow_box">' +
+          '<strong>' + truncatedLabel + '</strong><br/>' +
+          '<span>' + value + '</span>' +
+          '</div>';
+      }
+    },
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center',
+      floating: false,
+      itemMargin: {
+        horizontal: 10,
+        vertical: 4,
+      },
+      markers: {
+        width: 12,
+        height: 12,
+      },
+      fontSize: '13px',
+      labels: {
+        useSeriesColors: false,
+      },
+      onItemClick: {
+        toggleDataSeries: true,
+      },
+      onItemHover: {
+        highlightDataSeries: true,
+      },
+      scrollable: false,
+      formatter: function(seriesName) {
+        const maxLength = 30;
+        return seriesName.length > maxLength
+          ? seriesName.substring(0, maxLength) + '...'
+          : seriesName;
+      },
+    },
+    plotOptions: {
+      polarArea: {
+        rings: {
+          strokeWidth: 0,
+        },
+        spokes: {
+          strokeWidth: 0,
+        },
+      },
+    },
+    theme: {
+      monochrome: {
+        enabled: true,
+        shadeTo: 'light',
+        shadeIntensity: 0.6,
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 600,
+        options: {
+          chart: {
+            width: '100%',
+            height: '100%',
+          },
+        },
+      },
+    ],
+  }
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="totalAreaHa"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip content={<OnlyValueTooltip />} />
-        <Legend content={<CustomLegend />} />
-      </PieChart>
-    </ResponsiveContainer>
+    <Box
+      sx={{
+        height: '100%',
+      }}
+    >
+      <ReactApexCharts
+        options={chartOptions}
+        series={series}
+        type="polarArea"
+        height={500}
+        width="100%"
+      />
+    </Box>
   )
-} 
+}

@@ -1,7 +1,6 @@
 'use client'
 import * as React from 'react'
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
-
+import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -15,8 +14,7 @@ import {
 import { useTranslation } from 'next-i18next'
 import { usePopover } from '@/hooks/use-popover'
 import { IndexCard } from '@/components/overview/index-card'
-import { Check, Warning } from '@phosphor-icons/react'
-import { Subscriptions2 } from '@/components/map/subscription2'
+import { Check } from '@phosphor-icons/react'
 import { MapComponent } from '@/components/map/map'
 import { RegionsMenu } from '@/components/overview/regions-menu'
 import CardContent from '@mui/material/CardContent'
@@ -25,15 +23,25 @@ import CardHeader from '@mui/material/CardHeader'
 import Select from '@mui/material/Select'
 import Grid from '@mui/material/Grid'
 import { Option } from '@/components/core/option'
-import EntryModal from '@/components/modules/entry/entry-modal'
 import useFetch from '@/hooks/use-fetch'
 import { useMapStore } from '@/stores/map'
-import { use, useEffect, useState, useRef } from 'react'
-import { ConnectingAirportsOutlined } from '@mui/icons-material'
-import Avatar from '@mui/material/Avatar'
-import InfoIcon from '@mui/icons-material/Info'
-import Divider from '@mui/material/Divider'
 import SoilPieChart from '@/components/charts/SoilPieChart'
+
+const INDEX_COLORS = {
+  ndwi: '#0c44ae',
+  ndre: '#bb2720',
+  ndvi: '#209661',
+}
+
+const REGION_NAMES = [
+  'Чуйская',
+  'Таласская',
+  'Баткенская',
+  'Ошская',
+  'Джалал-Абадская',
+  'Иссык-Кульская',
+  'Нарынская',
+]
 
 export default function Page() {
   const { i18n } = useTranslation()
@@ -41,48 +49,50 @@ export default function Page() {
   const language = i18n.language || 'ru'
   const flag = languageFlags[language]
 
+  const mapRef = useRef()
+
   const [activeType, setActiveType] = useState('ndvi') // default active index
   const [activeRegion, setActiveRegion] = useState(null)
   const [activeDistrict, setActiveDistrict] = useState(null)
-  const clearActive = () => {
-    setActiveRegion(null)
-    setActiveDistrict(null)
-  }
+  const [allRegionIndexes, setAllRegionIndexes] = useState([])
+  const [allDistrictIndexes, setAllDistrictIndexes] = useState([])
+
+  const { data: regionsData } = useFetch('/api/map/regions', 'GET')
+  const { data: indexDictionaryData } = useFetch(
+    '/api/map/dictionaries/index',
+    'GET'
+  )
+  const { data: statusDictionaryData } = useFetch(
+    '/api/map/dictionaries/status',
+    'GET'
+  )
+  const { data: soilData, update: fetchSoilData } = useFetch('', 'GET')
+  const { data: districtsData, update: fetchDistrictsData } = useFetch(
+    '',
+    'GET'
+  )
+  const { update: fetchIndexData } = useFetch('', 'GET')
 
   const { getRegion, getDistricts, setDistricts } = useMapStore(
     (state) => state
   )
-  const { data: regionsData } = useFetch('/api/map/regions', 'GET')
-  const { data: indexes } = useFetch('/api/map/dictionaries/index', 'GET')
-  const { data: statuses } = useFetch('/api/map/dictionaries/status', 'GET')
 
-  const { data: districtsData, update: fetchDistricts } = useFetch('', 'GET')
-
-  const { data: index, update: fetchIndexes } = useFetch('', 'GET')
-  const { data: soil, update: fetchSoil } = useFetch('', 'GET')
-
-  const getDistrictsData = async (regionName) => {
-    await fetchDistricts(`/api/map/districts?regionName=${regionName}`)
+  const fetchIndexAndSoil = async (type, name) => {
+    await fetchIndexData(`/api/map/index?type=${type}&name=${name}`)
+    await fetchSoilData(`/api/map/soil?type=${type}&name=${name}`)
   }
 
-  const getIndexes = async (type, name) => {
-    await fetchIndexes(`/api/map/index?type=${type}&name=${name}`)
-    await fetchSoil(`/api/map/soil?type=${type}&name=${name}`)
+  const fetchDistricts = async (regionName) => {
+    await fetchDistrictsData(`/api/map/districts?regionName=${regionName}`)
   }
-console.log(soil)
+
   const getDistrictData = async (regionName) => {
     if (regionName) {
-      await getDistrictsData(regionName)
-      await getIndexes('region', regionName)
+      await fetchIndexAndSoil('region', regionName)
+      await fetchDistricts(regionName)
     } else {
       setDistricts(regionsData)
     }
-  }
-
-  const indexColors = {
-    ndwi: '#0c44ae',
-    ndre: '#bb2720',
-    ndvi: '#209661',
   }
 
   const handleBackToRegions = () => {
@@ -91,21 +101,9 @@ console.log(soil)
     setDistricts(regionsData)
   }
 
-  const regionNames = [
-    'Чуйская',
-    'Таласская',
-    'Баткенская',
-    'Ошская',
-    'Джалал-Абадская',
-    'Иссык-Кульская',
-    'Нарынская',
-  ]
-
-  const [allRegionIndexes, setAllRegionIndexes] = useState([])
-
   const fetchAllRegionIndexes = async () => {
-    const promises = regionNames.map(async (name) => {
-      const data = await fetchIndexes(
+    const promises = REGION_NAMES.map(async (name) => {
+      const data = await fetchIndexData(
         `/api/map/index?type=region&name=${encodeURIComponent(name)}`
       )
       return { name, data }
@@ -114,45 +112,51 @@ console.log(soil)
     setAllRegionIndexes(results)
   }
 
-  useEffect(() => {
-    fetchAllRegionIndexes()
-    fetchSoil(`/api/map/soil?type=region&name=Чуйская`)
-  }, [])
+  const fetchAllDistrictIndexes = async () => {
+    if (districtsData) {
+      const promises = districtsData.features?.map(async (feature) => {
+        const data = await fetchIndexData(
+          `/api/map/index?type=district&name=${encodeURIComponent(feature.properties.adm2_ru)}`
+        )
+        return { name: feature.properties.adm2_ru, data }
+      })
+      const results = await Promise.all(promises)
+      setAllDistrictIndexes(results)
+    }
+  }
 
   const region = allRegionIndexes.find(
     (region) => region.name === (activeRegion || 'Чуйская')
   )
+  const district = allDistrictIndexes.find(
+    (d) => d.name === activeDistrict
+  )
 
-  const [allDistrictIndexes, setAllDistrictIndexes] = useState([])
-
-  const fetchAllDistrictIndexes = async () => {
-    const promises = districtsData.features?.map(async (feature) => {
-      const data = await fetchIndexes(
-        `/api/map/index?type=district&name=${encodeURIComponent(feature.properties.adm2_ru)}`
-      )
-      return { name: feature.properties.adm2_ru, data }
-    })
-    const results = await Promise.all(promises)
-    setAllDistrictIndexes(results)
-  }
-
-  useEffect(() => {
-    if (districtsData) {
-      fetchAllDistrictIndexes()
-    }
-  }, [districtsData])
-console.log(allDistrictIndexes)
-
-  const mapRef = useRef()
-
-  const handleRegionSelect = (regionName) => {
+  const handleRegionSelect = async (regionName) => {
     setActiveRegion(regionName)
     setActiveDistrict(null)
-    getDistrictData(regionName)
+    await getDistrictData(regionName)
     if (mapRef.current && mapRef.current.zoomToRegion) {
       mapRef.current.zoomToRegion(regionName)
     }
   }
+
+  const handleDistrictSelect = async (districtName) => {
+    setActiveDistrict(districtName)
+    await fetchIndexAndSoil('district', districtName)
+    if (mapRef.current && mapRef.current.zoomToDistrict) {
+      mapRef.current.zoomToDistrict(districtName)
+    }
+  }
+
+  useEffect(() => {
+    fetchAllRegionIndexes()
+    fetchSoilData(`/api/map/soil?type=region&name=Чуйская`)
+  }, [])
+
+  useEffect(() => {
+    fetchAllDistrictIndexes()
+  }, [districtsData])
 
   return (
     <Box
@@ -240,51 +244,60 @@ console.log(allDistrictIndexes)
         </Stack>
 
         <Grid container spacing={2}>
-          {region ? (
-            region?.data?.map((i) => {
-              const matchedIndex = indexes?.find((ix) => ix.value === i.type)
-              const matchedStatus = statuses?.find(
-                (ix) => ix.value === i.status
-              )
-              const isActive = activeType === i.type
+          {(() => {
+            const indexData = activeDistrict && district && district.data
+              ? district.data
+              : region && region.data
+                ? region.data
+                : []
+            return indexData.length > 0 ? (
+              indexData.map((i) => {
+                const isActive = activeType === i.type
+                const matchedIndex = indexDictionaryData?.find(
+                  (ix) => ix.value === i.type
+                )
+                const matchedStatus = statusDictionaryData?.find(
+                  (ix) => ix.value === i.status
+                )
 
-              return (
-                <Grid key={i.type} item md={2.4} xs={12}>
-                  <IndexCard
-                    icon={Check}
-                    title={matchedIndex?.title_ru ?? i.type}
-                    value={i.viIndex}
-                    description={i.interpretation}
-                    status={matchedStatus?.title_ru ?? i.status}
-                    bgColor={indexColors[i.type]}
-                    onCardClick={() => setActiveType(i.type)}
-                    isActive={isActive}
-                  />
-                </Grid>
-              )
-            })
-          ) : (
-            <Grid item md={12} xs={12}>
-              <Card
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '135px',
-                }}
-              >
-                <Typography variant="body1" color="text.secondary">
-                  Данные отсутствуют
-                </Typography>
-              </Card>
-            </Grid>
-          )}
+                return (
+                  <Grid key={i.type} item md={2.4} xs={12}>
+                    <IndexCard
+                      icon={Check}
+                      title={matchedIndex?.title_ru ?? i.type}
+                      value={i.viIndex}
+                      description={i.interpretation}
+                      status={matchedStatus?.title_ru ?? i.status}
+                      bgColor={INDEX_COLORS[i.type]}
+                      onCardClick={() => setActiveType(i.type)}
+                      isActive={isActive}
+                    />
+                  </Grid>
+                )
+              })
+            ) : (
+              <Grid item md={12} xs={12}>
+                <Card
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '135px',
+                  }}
+                >
+                  <Typography variant="body1" color="text.secondary">
+                    Данные отсутствуют
+                  </Typography>
+                </Card>
+              </Grid>
+            )
+          })()}
         </Grid>
 
         <Grid item md={12} xs={12}>
-          <Card>
+          <Card sx={{ height: 'calc(100dvh - 265px)' }}>
             <CardHeader
-              title={getRegion() ?? 'Кыргызская Республика'}
+              title={activeRegion || 'Кыргызская Республика'}
               sx={{
                 p: 2,
                 '&': {
@@ -319,8 +332,8 @@ console.log(allDistrictIndexes)
                 </Box>
               }
             />
-            <CardContent sx={{ p: 0, flex: 1, height: '100%' }}>
-              <Grid container spacing={2}>
+            <CardContent sx={{ p: 0, height: '100%' }}>
+              <Grid container spacing={2} sx={{ height: '100%' }}>
                 <Grid item md={2} xs={12}>
                   <RegionsMenu
                     regions={
@@ -335,28 +348,29 @@ console.log(allDistrictIndexes)
                     setActiveRegion={setActiveRegion}
                     onBackToRegions={handleBackToRegions}
                     onRegionSelect={handleRegionSelect}
+                    onDistrictSelect={handleDistrictSelect}
                   />
                 </Grid>
-                <Grid item md={8} xs={12} sx={{ height: '100vh', minHeight: 0 }}>
+                <Grid item md={8} xs={12}>
                   <MapComponent
                     ref={mapRef}
+                    indexDictionaryData={indexDictionaryData}
                     regionsData={regionsData}
                     districtsData={districtsData}
-                    getDistrictsData={getDistrictsData}
-                    getIndexes={getIndexes}
+                    getDistrictsData={fetchDistricts}
+                    getIndexes={fetchIndexAndSoil}
                     activeRegion={activeRegion}
                     setActiveRegion={setActiveRegion}
                     activeDistrict={activeDistrict}
                     setActiveDistrict={setActiveDistrict}
-                    clearActive={clearActive}
                     activeType={activeType}
                     indexData={allRegionIndexes}
                     districtsIndexData={allDistrictIndexes}
-                    indexColors={indexColors}
+                    indexColors={INDEX_COLORS}
                   />
                 </Grid>
-                <Grid item md={2} xs={12}>
-                  <SoilPieChart data={soil?.slice(0, 5)} />
+                <Grid item md={2} xs={12} sx={{ height: '100%' }}>
+                  <SoilPieChart data={soilData?.slice(0, 5)} />
                 </Grid>
               </Grid>
             </CardContent>
