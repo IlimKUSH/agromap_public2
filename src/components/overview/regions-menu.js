@@ -1,3 +1,4 @@
+'use client'
 import * as React from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -21,7 +22,7 @@ export function RegionsMenu({
 }) {
   const isRegion = !activeRegion && !activeDistrict
   const title = isRegion ? 'Области' : 'Районы'
-  console.log(regions)
+
   return (
     <Card sx={{ height: '100%' }}>
       <Box
@@ -51,7 +52,7 @@ export function RegionsMenu({
       </Box>
 
       <CardContent sx={{ p: 0 }}>
-        <List disablePadding>
+        <List disablePadding sx={{ maxHeight: '490px', overflowY: 'auto' }}>
           {regions?.length > 0 ? (
             regions.map((region, index) => {
               const regionName = region.properties?.adm1_ru

@@ -69,6 +69,7 @@ export const MapComponent = forwardRef(
       if (matchedIndex && index) {
         return `${matchedIndex.title_ru}: ${index.viIndex}`
       }
+      return null
     }
 
     const getDistrictIndex = (name) => {
@@ -81,132 +82,127 @@ export const MapComponent = forwardRef(
       if (matchedIndex && index) {
         return `${matchedIndex.title_ru}: ${index.viIndex}`
       }
+      return null
     }
 
-    // Style for regions, with labels for all regions
+    const LABEL_STYLES = {
+      font: 'bold 16px Arial',
+      padding: [2, 2, 2, 2],
+      backgroundFill: new Fill({ color: '#FFF' }),
+      backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
+      stroke: new Stroke({ color: '#fff', width: 3 }),
+    }
+
+    const createLabelText = (name, type = 'region') => {
+      const indexText =
+        type === 'region' ? getRegionIndex(name) : getDistrictIndex(name)
+      const labelStyle = LABEL_STYLES
+
+      return new Text({
+        text: indexText,
+        font: labelStyle.font,
+        fill: new Fill({ color: getIndexColor(activeType) }),
+        stroke: labelStyle.stroke,
+        padding: labelStyle.padding,
+        backgroundFill: labelStyle.backgroundFill,
+        backgroundStroke: labelStyle.backgroundStroke,
+      })
+    }
+
+    const createBaseStyle = (
+      strokeColor,
+      fillColor,
+      strokeWidth,
+      textStyle
+    ) => {
+      return new Style({
+        stroke: new Stroke({
+          color: strokeColor,
+          width: strokeWidth,
+        }),
+        fill: new Fill({
+          color: fillColor,
+        }),
+        ...(textStyle && { text: textStyle }),
+      })
+    }
+    // Updated region style
     const regionStyle = (feature) => {
       const regionName = feature.get('adm1_ru')
-
-      const text = new Text({
-        text: getRegionIndex(regionName),
-        font: 'bold 16px Arial',
-        fill: new Fill({ color: getIndexColor(activeType) }),
-        padding: [2, 2, 2, 2],
-        backgroundFill: new Fill({ color: '#FFF' }),
-        backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
-        stroke: new Stroke({ color: '#fff', width: 3 }),
-      })
+      const text = createLabelText(regionName, 'region')
 
       if (activeRegion && regionName === activeRegion) {
-        return new Style({
-          stroke: new Stroke({
-            color: 'rgba(0, 123, 255, 0.8)',
-            width: 2,
-          }),
-          fill: new Fill({
-            color: 'rgba(0, 123, 255, 0.1)',
-          }),
-          text: text,
-        })
+        return createBaseStyle(
+          'rgba(0, 82, 180, 1)', // Deep blue stroke
+          'rgba(204, 221, 255, 0.4)', // Light blue fill
+          2,
+          text
+        )
       }
+
       if (initialHighlight && regionName === initialHighlight) {
-        return new Style({
-          stroke: new Stroke({
-            color: 'rgba(0, 123, 255, 1)',
-            width: 2,
-          }),
-          fill: new Fill({
-            color: 'rgba(0, 123, 255, 0.5)',
-          }),
-          text: text,
-        })
+        return createBaseStyle(
+          'rgba(0, 82, 180, 1)', // Same stroke
+          'rgba(204, 221, 255, 0.7)', // Slightly stronger fill
+          2,
+          text
+        )
       }
-      return new Style({
-        stroke: new Stroke({
-          color: 'rgba(0, 123, 255, 0.8)',
-          width: 2,
-        }),
-        fill: new Fill({
-          color: 'rgba(0, 123, 255, 0.1)',
-        }),
-        text: text,
-      })
+
+      return createBaseStyle(
+        'rgba(0, 82, 180, 1)',
+        'rgba(204, 221, 255, 0.2)',
+        1.5,
+        text
+      )
     }
 
-    // Style for districts, with labels for all districts
+    // Updated district style
     const districtStyle = (feature) => {
       const districtName = feature.get('adm2_ru')
-
-      const text = new Text({
-        text: getDistrictIndex(districtName),
-        font: 'bold 12px Arial',
-        fill: new Fill({ color: getIndexColor(activeType) }),
-        stroke: new Stroke({ color: '#fff', width: 3 }),
-        overflow: true,
-        textAlign: 'center',
-      })
+      const text = createLabelText(districtName, 'district')
 
       if (activeDistrict && districtName === activeDistrict) {
-        return new Style({
-          stroke: new Stroke({
-            color: 'rgba(0, 0, 255, 1)',
-            width: 4,
-          }),
-          fill: new Fill({
-            color: 'rgba(0, 0, 255, 0.2)',
-          }),
-          text: text,
-        })
+        return createBaseStyle(
+          'rgba(0, 64, 128, 1)', // Slightly darker blue stroke
+          'rgba(179, 212, 255, 0.5)', // Softer fill
+          3,
+          text
+        )
       }
-      return new Style({
-        stroke: new Stroke({
-          color: 'rgba(0, 123, 255, 0.8)',
-          width: 2,
-        }),
-        fill: new Fill({
-          color: 'rgba(0, 123, 255, 0.1)',
-        }),
-        text: text,
-      })
+
+      return createBaseStyle(
+        'rgba(0, 82, 180, 1)',
+        'rgba(204, 221, 255, 0.2)',
+        1.5,
+        text
+      )
     }
 
-    // Highlight style for regions (with label)
+    // Updated highlight for regions
     const regionHighlightStyle = (feature) => {
       const regionName = feature.get('adm1_ru')
-      return new Style({
-        stroke: new Stroke({
-          color: 'rgba(255, 204, 0, 0.8)',
-          width: 3,
-        }),
-        fill: new Fill({ color: 'rgba(255, 204, 0, 0.4)' }),
-        // text: new Text({
-        //   text: getRegionIndex(regionName),
-        //   font: 'bold 16px Arial',
-        //   fill: new Fill({ color: getIndexColor(activeType) }),
-        //   padding: [2, 2, 2, 2],
-        //   backgroundFill: new Fill({ color: '#FFF' }),
-        //   backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
-        //   stroke: new Stroke({ color: '#fff', width: 3 }),
-        // }),
-      })
+      const text = createLabelText(regionName, 'region')
+
+      return createBaseStyle(
+        'rgba(0, 38, 84, 1)', // Dark navy stroke
+        'rgba(173, 216, 230, 0.5)', // Light blue fill
+        3,
+        text
+      )
     }
 
-    // Highlight style for districts (with label)
+    // Updated highlight for districts
     const districtHighlightStyle = (feature) => {
       const districtName = feature.get('adm2_ru')
+      const text = createLabelText(districtName, 'district')
 
-      return new Style({
-        stroke: new Stroke({ color: 'rgba(255, 0, 0, 0.8)', width: 3 }),
-        fill: new Fill({ color: 'rgba(255, 0, 0, 0.2)' }),
-        // text: new Text({
-        //   text: getDistrictIndex(districtName),
-        //   font: 'bold 12px Arial',
-        //   fill: new Fill({ color: getIndexColor(activeType) }),
-        //   stroke: new Stroke({ color: '#fff', width: 3 }),
-        //   overflow: true,
-        //   textAlign: 'center',
-        // }),
-      })
+      return createBaseStyle(
+        'rgba(0, 51, 102, 1)', // Deep steel blue
+        'rgba(173, 216, 230, 0.3)', // Light fill
+        2.5,
+        text
+      )
     }
 
     useEffect(() => {
@@ -465,35 +461,35 @@ export const MapComponent = forwardRef(
               style={{
                 width: '16px',
                 height: '16px',
-                backgroundColor: 'rgba(0, 123, 255, 0.3)',
-                border: '2px solid #007bff',
+                backgroundColor: 'rgba(204, 221, 255, 0.3)',
+                border: '2px solid rgba(0, 82, 180, 1)',
                 marginRight: '8px',
               }}
             />
             <span style={{ fontSize: '12px' }}>Области</span>
           </div>
-          <div>
-            <div
-              style={{
-                width: '100%',
-                height: '16px',
-                background: 'linear-gradient(to right, #fff, #80a179)',
-                borderRadius: '8px',
-                marginTop: '4px',
-              }}
-            />
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '10px',
-                marginTop: '4px',
-              }}
-            >
-              <span>Слабый</span>
-              <span>Сильный</span>
-            </div>
-          </div>
+          {/*<div>*/}
+          {/*  <div*/}
+          {/*    style={{*/}
+          {/*      width: '100%',*/}
+          {/*      height: '16px',*/}
+          {/*      background: 'linear-gradient(to right, #fff, #80a179)',*/}
+          {/*      borderRadius: '8px',*/}
+          {/*      marginTop: '4px',*/}
+          {/*    }}*/}
+          {/*  />*/}
+          {/*  <div*/}
+          {/*    style={{*/}
+          {/*      display: 'flex',*/}
+          {/*      justifyContent: 'space-between',*/}
+          {/*      fontSize: '10px',*/}
+          {/*      marginTop: '4px',*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    <span>Слабый</span>*/}
+          {/*    <span>Сильный</span>*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </Box>
       </Box>
     )

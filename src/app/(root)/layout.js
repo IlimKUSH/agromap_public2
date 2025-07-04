@@ -1,6 +1,7 @@
 import * as React from 'react'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import Box from '@mui/material/Box'
+import '@/styles/global.css'
 
 export default function Layout({ children }) {
   return (

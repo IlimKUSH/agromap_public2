@@ -25,7 +25,13 @@ import Grid from '@mui/material/Grid'
 import { Option } from '@/components/core/option'
 import useFetch from '@/hooks/use-fetch'
 import { useMapStore } from '@/stores/map'
-import SoilPieChart from '@/components/charts/SoilPieChart'
+import dynamic from 'next/dynamic'
+const SoilPieChart = dynamic(
+  () => import('../../components/charts/SoilPieChart'),
+  {
+    ssr: false,
+  }
+)
 
 const INDEX_COLORS = {
   ndwi: '#0c44ae',
@@ -128,9 +134,7 @@ export default function Page() {
   const region = allRegionIndexes.find(
     (region) => region.name === (activeRegion || 'Чуйская')
   )
-  const district = allDistrictIndexes.find(
-    (d) => d.name === activeDistrict
-  )
+  const district = allDistrictIndexes.find((d) => d.name === activeDistrict)
 
   const handleRegionSelect = async (regionName) => {
     setActiveRegion(regionName)
@@ -245,11 +249,12 @@ export default function Page() {
 
         <Grid container spacing={2}>
           {(() => {
-            const indexData = activeDistrict && district && district.data
-              ? district.data
-              : region && region.data
-                ? region.data
-                : []
+            const indexData =
+              activeDistrict && district && district.data
+                ? district.data
+                : region && region.data
+                  ? region.data
+                  : []
             return indexData.length > 0 ? (
               indexData.map((i) => {
                 const isActive = activeType === i.type
@@ -297,7 +302,11 @@ export default function Page() {
         <Grid item md={12} xs={12}>
           <Card sx={{ height: 'calc(100dvh - 265px)' }}>
             <CardHeader
-              title={activeRegion || 'Кыргызская Республика'}
+              title={
+                (activeRegion && `${activeRegion} область`) ||
+                (activeDistrict && `${activeDistrict} район`) ||
+                'Кыргызская Республика'
+              }
               sx={{
                 p: 2,
                 '&': {

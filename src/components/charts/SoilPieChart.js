@@ -1,7 +1,7 @@
+'use client'
 import React from 'react'
 import Box from '@mui/material/Box'
 import ReactApexCharts from 'react-apexcharts'
-import Typography from '@mui/material/Typography'
 
 export default function SoilPieChart({ data }) {
   if (!Array.isArray(data) || data.length === 0) {
@@ -28,18 +28,25 @@ export default function SoilPieChart({ data }) {
       show: false,
     },
     tooltip: {
-      custom: function({series, seriesIndex, dataPointIndex, w}) {
-        const label = w.globals.labels[seriesIndex];
-        const value = series[seriesIndex];
-        const maxLength = 30;
-        const truncatedLabel = label.length > maxLength
-          ? label.substring(0, maxLength) + '...'
-          : label;
-        return '<div class="arrow_box">' +
-          '<strong>' + truncatedLabel + '</strong><br/>' +
-          '<span>' + value + '</span>' +
-          '</div>';
-      }
+      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+        const label = w.globals.labels[seriesIndex]
+        const value = series[seriesIndex]
+        const maxLength = 30
+        const truncatedLabel =
+          label.length > maxLength
+            ? label.substring(0, maxLength) + '...'
+            : label
+        return (
+          '<div class="arrow_box">' +
+          '<strong>' +
+          truncatedLabel +
+          '</strong><br/>' +
+          '<span>' +
+          value +
+          ' га</span>' +
+          '</div>'
+        )
+      },
     },
     legend: {
       position: 'bottom',
@@ -64,12 +71,6 @@ export default function SoilPieChart({ data }) {
         highlightDataSeries: true,
       },
       scrollable: false,
-      formatter: function(seriesName) {
-        const maxLength = 30;
-        return seriesName.length > maxLength
-          ? seriesName.substring(0, maxLength) + '...'
-          : seriesName;
-      },
     },
     plotOptions: {
       polarArea: {

@@ -19,14 +19,26 @@
   --maxWidth-xl: 1440px;
 }
 
-*:focus-visible {
-  outline: 2px solid var(--mui-palette-primary-main);
-}
-
 html {
   height: 100%;
 }
 
 body {
   height: 100%;
+}
+
+.arrow_box {
+  padding: 5px;
+}
+
+.apexcharts-legend {
+  justify-content: start !important;
+}
+
+.apexcharts-legend-series {
+  align-items: start !important;
+}
+
+.apexcharts-legend-marker {
+  flex: none;
 }
