@@ -367,7 +367,14 @@ export default function Page() {
                   />
                 </Grid>
                 <Grid item md={2} xs={12} sx={{ height: '100%' }}>
-                  <SoilPieChart data={soilData?.slice(0, 5)} />
+                  <SoilPieChart
+                    data={soilData?.slice(0, 5)}
+                    title={
+                      (activeRegion && `${activeRegion} область`) ||
+                      (activeDistrict && `${activeDistrict} район`) ||
+                      'Кыргызская Республика'
+                    }
+                  />
                 </Grid>
               </Grid>
             </CardContent>
