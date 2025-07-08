@@ -134,7 +134,7 @@ export function RegionsMenu({
               }}
             >
               <Typography variant="body1" color="text.secondary">
-                Данные отсутствуют
+                Данные загружаются
               </Typography>
             </ListItem>
           )}

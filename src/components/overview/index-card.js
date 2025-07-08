@@ -6,12 +6,9 @@ import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { TrendDown as TrendDownIcon } from '@phosphor-icons/react/dist/ssr/TrendDown'
-import { TrendUp as TrendUpIcon } from '@phosphor-icons/react/dist/ssr/TrendUp'
 import { Tooltip } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import InfoIcon from '@mui/icons-material/Info'
-import useFetch from '@/hooks/use-fetch'
 
 export function IndexCard({
   title,

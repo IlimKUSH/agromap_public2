@@ -34,8 +34,8 @@ const SoilPieChart = dynamic(
 )
 
 const INDEX_COLORS = {
-  ndwi: '#0c44ae',
-  ndre: '#bb2720',
+  ndwi: '#4d6ca6',
+  ndre: '#b85d58',
   ndvi: '#209661',
 }
 
@@ -52,9 +52,7 @@ const REGION_NAMES = [
 export default function Page() {
   const { i18n } = useTranslation()
   const popover = usePopover()
-  const language = i18n.language || 'ru'
-  const flag = languageFlags[language]
-
+  const language = i18n.language || 'РУС'
   const mapRef = useRef()
 
   const [activeType, setActiveType] = useState('ndvi') // default active index
@@ -199,12 +197,12 @@ export default function Page() {
             }}
             variant="h5"
           >
-            Интелектуальная система Агромап
+            Интелектуальная система AgroMap
           </Typography>
 
           <Stack direction="row" spacing={2}>
             <React.Fragment>
-              <Tooltip title="Language">
+              <Tooltip title="Смена языка">
                 <IconButton
                   onClick={popover.handleOpen}
                   ref={popover.anchorRef}
@@ -215,17 +213,7 @@ export default function Page() {
                     },
                   }}
                 >
-                  <Box sx={{ height: '24px', width: '24px' }}>
-                    <Box
-                      alt={language}
-                      component="img"
-                      src={flag}
-                      sx={{
-                        height: 'auto',
-                        width: '100%',
-                      }}
-                    />
-                  </Box>
+                  <Typography variant="subtitle2">{language}</Typography>
                 </IconButton>
               </Tooltip>
               <LanguagePopover
@@ -266,7 +254,7 @@ export default function Page() {
                 )
 
                 return (
-                  <Grid key={i.type} item md={2.4} xs={12}>
+                  <Grid key={i.type} item md={4} xs={12}>
                     <IndexCard
                       icon={Check}
                       title={matchedIndex?.title_ru ?? i.type}
@@ -291,7 +279,7 @@ export default function Page() {
                   }}
                 >
                   <Typography variant="body1" color="text.secondary">
-                    Данные отсутствуют
+                    Данные загружаются
                   </Typography>
                 </Card>
               </Grid>

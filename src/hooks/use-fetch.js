@@ -82,7 +82,7 @@ export default function useFetch(url, method, options) {
         // if (error?.status === 404) {
         //   return;
         // }
-        toast.error(error?.message ?? null)
+        toast.error(error?.message ?? 'Ошибка. Повторите позже')
       })
       .finally(() => {
         setLoading(false)
