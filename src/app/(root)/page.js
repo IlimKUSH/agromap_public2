@@ -73,11 +73,16 @@ export default function Page() {
     'GET'
   )
   const { data: soilData, update: fetchSoilData } = useFetch('', 'GET')
-  const { data: cultureData, update: fetchCultureData } = useFetch('', 'GET')
-  const { data: districtsData, update: fetchDistrictsData } = useFetch(
-    '',
-    'GET'
-  )
+  const {
+    data: cultureData,
+    loading: cultureLoading,
+    update: fetchCultureData,
+  } = useFetch('', 'GET')
+  const {
+    data: districtsData,
+    loading: districtsLoading,
+    update: fetchDistrictsData,
+  } = useFetch('', 'GET')
   const { update: fetchIndexData } = useFetch('', 'GET')
 
   const { getRegion, getDistricts, setDistricts } = useMapStore(
@@ -307,7 +312,7 @@ export default function Page() {
                 )
 
                 return (
-                  <Grid key={i.type} item md={4} xs={12}>
+                  <Grid key={i.type} item md={12 / indexData.length} xs={12}>
                     <IndexCard
                       icon={Check}
                       title={matchedIndex?.title_ru ?? i.type}
@@ -332,9 +337,8 @@ export default function Page() {
                     height: '135px',
                   }}
                 >
-                  <CircularProgress size={20} color="primary" />
                   <Typography variant="body1" color="text.secondary">
-                    Данные загружаются
+                    Данных нет
                   </Typography>
                 </Card>
               </Grid>
@@ -359,35 +363,39 @@ export default function Page() {
               action={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle1">Фильтр по:</Typography>
+
                   <Select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
                     name="filterType"
-                    sx={{
-                      maxWidth: '100%',
-                      width: '200px',
-                    }}
+                    sx={{ width: '200px' }}
                   >
                     <Option value="soil">типу почвы</Option>
                     <Option value="culture">культурам</Option>
                   </Select>
-                  {filterType === 'culture' && (
-                    <Select
-                      value={year}
-                      onChange={(e) => setYear(e.target.value)}
-                      name="year"
-                      sx={{
-                        maxWidth: '100%',
-                        width: '240px',
-                      }}
-                    >
-                      {Array.from({ length: 6 }, (_, i) => 2020 + i).map(
-                        (y) => (
-                          <Option key={y} value={String(y)}>{`за ${y}`}</Option>
-                        )
-                      )}
-                    </Select>
-                  )}
+
+                  <Box sx={{ width: '150px' }}>
+                    {filterType === 'culture' ? (
+                      <Select
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        name="year"
+                        fullWidth
+                      >
+                        {Array.from({ length: 6 }, (_, i) => 2020 + i).map(
+                          (y) => (
+                            <Option
+                              key={y}
+                              value={String(y)}
+                            >{`за ${y}`}</Option>
+                          )
+                        )}
+                      </Select>
+                    ) : (
+                      // Empty box to reserve the same space
+                      <Box sx={{ height: 40 }} />
+                    )}
+                  </Box>
                 </Box>
               }
             />
@@ -408,6 +416,7 @@ export default function Page() {
                     onBackToRegions={handleBackToRegions}
                     onRegionSelect={handleRegionSelect}
                     onDistrictSelect={handleDistrictSelect}
+                    districtsLoading={districtsLoading}
                   />
                 </Grid>
                 <Grid item md={8} xs={12}>
@@ -441,6 +450,8 @@ export default function Page() {
                       (activeDistrict && `${activeDistrict} район`) ||
                       'Кыргызская Республика'
                     }
+                    cultureLoading={cultureLoading}
+                    filterType={filterType}
                   />
                 </Grid>
               </Grid>

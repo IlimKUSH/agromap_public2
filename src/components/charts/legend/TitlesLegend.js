@@ -64,7 +64,7 @@ const TitlesLegend = ({
                   alignSelf: 'center',
                 }}
               >
-                {truncateLabel(title)}
+                {truncateLabel(title) || 'Культура неизвестна'}
               </Typography>
             </Tooltip>
           </Box>

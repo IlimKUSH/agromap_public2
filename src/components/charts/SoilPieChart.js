@@ -11,15 +11,37 @@ const formatNumber = (num) =>
     maximumFractionDigits: 2,
   }).format(num)
 
-export default function SoilPieChart({ data, title }) {
+export default function SoilPieChart({
+  data,
+  title,
+  filterType,
+  cultureLoading,
+}) {
   const [progress, setProgress] = useState(1)
   const [hoveredIndex, setHoveredIndex] = useState(null)
+
+  if (cultureLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '325px',
+        }}
+      >
+        <CircularProgress size={24} />
+        <Typography variant="body2" sx={{ ml: 2 }}>
+          Загрузка данных...
+        </Typography>
+      </Box>
+    )
+  }
 
   if (!Array.isArray(data) || data.length === 0) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <CircularProgress size={20} color="primary" />
-        Данные загружаются
+        Данных нет
       </Box>
     )
   }
@@ -55,7 +77,11 @@ export default function SoilPieChart({ data, title }) {
           lineHeight: 1.4,
         }}
       >
-        Распространенные типы <strong style={{ fontWeight: 600 }}>почв</strong>:
+        Распространенные типы{' '}
+        <strong style={{ fontWeight: 600 }}>
+          {filterType === 'culture' ? 'культур' : 'почв'}
+        </strong>
+        :
         <br />
         <strong style={{ fontWeight: 600 }}>{title}</strong>
       </Typography>
