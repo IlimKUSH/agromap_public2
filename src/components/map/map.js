@@ -41,6 +41,7 @@ export const MapComponent = forwardRef(
       indexData,
       districtsIndexData,
       indexColors,
+      landType = 'pashni',
     },
     ref
   ) => {
@@ -67,7 +68,7 @@ export const MapComponent = forwardRef(
       )
 
       if (matchedIndex && index) {
-        return `${matchedIndex.title_ru}: ${index.viIndex}`
+        return `${matchedIndex.title_ru}: ${Number(index.viIndex).toFixed(2)}`
       }
       return null
     }
@@ -80,13 +81,13 @@ export const MapComponent = forwardRef(
       )
 
       if (matchedIndex && index) {
-        return `${matchedIndex.title_ru}: ${index.viIndex}`
+        return `${matchedIndex.title_ru}: ${Number(index.viIndex).toFixed(2)}`
       }
       return null
     }
     // Обновлённый стиль для области
     const regionStyle = (feature) => {
-      const regionName = feature.get('adm1_ru')
+      const regionName = feature.get('pname_r')
       const index = getRegionIndex(regionName)
 
       const isActive = activeRegion && regionName === activeRegion
@@ -118,7 +119,7 @@ export const MapComponent = forwardRef(
 
     // Обновлённый стиль для района
     const districtStyle = (feature) => {
-      const districtName = feature.get('adm2_ru')
+      const districtName = feature.get('dname_r')
       const index = getDistrictIndex(districtName)
       const isActive = activeDistrict && districtName === activeDistrict
 
@@ -146,8 +147,8 @@ export const MapComponent = forwardRef(
 
     // Стиль при наведении на область
     const regionHighlightStyle = (feature) => {
-      const name = feature.get('adm1_ru')
-      const region = feature.get('adm1typ_ru')
+      const name = feature.get('pname_r')
+      // const region = feature.get('adm1typ_ru')
 
       return new Style({
         stroke: new Stroke({
@@ -158,9 +159,10 @@ export const MapComponent = forwardRef(
           color: 'rgba(173, 216, 230, 0.5)',
         }),
         text: new Text({
-          text: `${name} ${region}`,
+          // text: `${name} ${region}`,
+          text: `${name}`,
           font: 'bold 16px Arial',
-          fill: new Fill({ color: getIndexColor(activeType) }),
+          fill: new Fill({ color: '#000' }),
           stroke: new Stroke({ color: '#fff', width: 3 }),
           backgroundFill: new Fill({ color: '#FFF' }),
           backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
@@ -171,8 +173,8 @@ export const MapComponent = forwardRef(
 
     // Стиль при наведении на район
     const districtHighlightStyle = (feature) => {
-      const name = feature.get('adm2_ru')
-      const district = feature.get('adm2typ_ru')
+      const name = feature.get('dname_r')
+      // const district = feature.get('adm2typ_ru')
 
       return new Style({
         stroke: new Stroke({
@@ -183,15 +185,22 @@ export const MapComponent = forwardRef(
           color: 'rgba(173, 216, 230, 0.3)',
         }),
         text: new Text({
-          text: `${name} ${district}`,
+          // text: `${name} ${district}`,
+          text: `${name}`,
           font: 'bold 16px Arial',
-          fill: new Fill({ color: getIndexColor(activeType) }),
+          fill: new Fill({ color: '#000' }),
           stroke: new Stroke({ color: '#fff', width: 3 }),
           backgroundFill: new Fill({ color: '#FFF' }),
           backgroundStroke: new Stroke({ color: '#fff', width: 3 }),
           padding: [2, 2, 2, 2],
         }),
       })
+    }
+
+    const getLayerName = () => {
+      if (landType === 'pashni') return 'agromapv2:v_osm_pashni'
+      if (landType === 'pastbishcha') return 'agromapv2:v_osm_pastbishcha'
+      return 'agromapv2:v_osm_pashni'
     }
 
     useEffect(() => {
@@ -204,7 +213,7 @@ export const MapComponent = forwardRef(
         wmsSourceRef.current = new ImageWMS({
           url: GEOSERVER_URL,
           params: {
-            LAYERS: AGROMAP_LAYER,
+            LAYERS: getLayerName(),
             FORMAT: 'image/png',
             TRANSPARENT: true,
             VERSION: '1.1.1',
@@ -297,7 +306,7 @@ export const MapComponent = forwardRef(
             }
           )
           if (districtFeature) {
-            const districtName = districtFeature.get('adm2_ru')
+            const districtName = districtFeature.get('dname_r')
             setActiveDistrict(districtName)
             setActiveRegion(null)
             getIndexes('district', districtName)
@@ -321,10 +330,11 @@ export const MapComponent = forwardRef(
             }
           )
           if (regionFeature) {
-            const regionName = regionFeature.get('adm1_ru')
+            const regionName = regionFeature.get('pname_r')
             setActiveRegion(regionName)
             setActiveDistrict(null)
-            setRegion(`${regionName} ${regionFeature.get('adm1typ_ru')}`)
+            // setRegion(`${regionName} ${regionFeature.get('adm1typ_ru')}`)
+            setRegion(`${regionName}`)
             getDistrictsData(regionName)
             getIndexes('region', regionName)
             if (initialHighlight && regionName !== initialHighlight) {
@@ -353,6 +363,14 @@ export const MapComponent = forwardRef(
         }
       }
     }, [])
+
+    useEffect(() => {
+      if (wmsSourceRef.current) {
+        wmsSourceRef.current.updateParams({
+          LAYERS: getLayerName(),
+        })
+      }
+    }, [landType])
 
     useEffect(() => {
       if (mapInstanceRef.current && regionsData) {
@@ -400,7 +418,7 @@ export const MapComponent = forwardRef(
       zoomToRegion: (regionName) => {
         if (!mapInstanceRef.current || !vectorLayerRef.current) return
         const features = vectorLayerRef.current.getSource().getFeatures()
-        const feature = features.find((f) => f.get('adm1_ru') === regionName)
+        const feature = features.find((f) => f.get('pname_r') === regionName)
         if (feature) {
           const geometry = feature.getGeometry()
           const extent = geometry.getExtent()

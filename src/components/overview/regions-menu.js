@@ -6,7 +6,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import { Box } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import Button from '@mui/material/Button'
 import { ArrowLeftIcon } from '@mui/x-date-pickers'
 
@@ -22,7 +22,7 @@ export function RegionsMenu({
 }) {
   const isRegion = !activeRegion && !activeDistrict
   const title = isRegion ? 'Области' : 'Районы'
-
+  console.log(regions)
   return (
     <Card sx={{ height: '100%' }}>
       <Box
@@ -55,25 +55,28 @@ export function RegionsMenu({
         <List disablePadding sx={{ maxHeight: '490px', overflowY: 'auto' }}>
           {regions?.length > 0 ? (
             regions.map((region, index) => {
-              const regionName = region.properties?.adm1_ru
-              const districtName = region.properties?.adm2_ru
+              const regionName = region.properties?.pname_r
+              const districtName = region.properties?.dname_r
 
-              const isRegion = !!regionName && !districtName
               const isDistrict = !!districtName
               const isActive =
-                (isRegion && activeRegion === regionName) ||
-                (isDistrict && activeDistrict === districtName)
+                (isDistrict && activeDistrict === districtName) ||
+                (!isDistrict && activeRegion === regionName)
 
               const handleSelect = () => {
                 if (isRegion) {
                   if (onRegionSelect) {
-                    onRegionSelect(regionName)
+                    onRegionSelect(
+                      isRegion
+                        ? region.properties?.pname_r
+                        : region.properties?.dname_r
+                    )
                   } else {
                     setActiveRegion(regionName)
                     setActiveDistrict(null)
                     getDistrictsData(regionName)
                   }
-                } else if (isDistrict) {
+                } else {
                   setActiveDistrict(districtName)
                   setActiveRegion(null)
                 }
@@ -109,7 +112,9 @@ export function RegionsMenu({
                             : {}
                         }
                       >
-                        {districtName ?? regionName}
+                        {isRegion
+                          ? region.properties?.pname_r
+                          : region.properties?.dname_r}
                       </Typography>
                     }
                     // secondary={
@@ -133,9 +138,12 @@ export function RegionsMenu({
                 p: '10px 30px',
               }}
             >
-              <Typography variant="body1" color="text.secondary">
-                Данные загружаются
-              </Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <CircularProgress size={20} color="primary" />
+                <Typography variant="body1" color="text.secondary">
+                  Данные загружаются
+                </Typography>
+              </Box>
             </ListItem>
           )}
         </List>

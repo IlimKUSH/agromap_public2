@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import Box from '@mui/material/Box'
-import { Tooltip } from '@mui/material'
+import { CircularProgress, Tooltip } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import TitlesLegend from '@/components/charts/legend/TitlesLegend'
 
@@ -16,7 +16,12 @@ export default function SoilPieChart({ data, title }) {
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
   if (!Array.isArray(data) || data.length === 0) {
-    return <div>Данные загружаются</div>
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <CircularProgress size={20} color="primary" />
+        Данные загружаются
+      </Box>
+    )
   }
 
   const sum = data.reduce((acc, d) => acc + d.totalAreaHa, 0)

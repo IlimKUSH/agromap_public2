@@ -5,12 +5,9 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Tooltip } from '@mui/material'
+import { CircularProgress, Tooltip } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
-import {
-  languageFlags,
-  LanguagePopover,
-} from '@/components/layout/language-popover'
+import { LanguagePopover } from '@/components/layout/language-popover'
 import { useTranslation } from 'next-i18next'
 import { usePopover } from '@/hooks/use-popover'
 import { IndexCard } from '@/components/overview/index-card'
@@ -26,6 +23,7 @@ import { Option } from '@/components/core/option'
 import useFetch from '@/hooks/use-fetch'
 import { useMapStore } from '@/stores/map'
 import dynamic from 'next/dynamic'
+
 const SoilPieChart = dynamic(
   () => import('../../components/charts/SoilPieChart'),
   {
@@ -55,13 +53,17 @@ export default function Page() {
   const language = i18n.language || 'РУС'
   const mapRef = useRef()
 
-  const [activeType, setActiveType] = useState('ndvi') // default active index
+  const [activeType, setActiveType] = useState('ndvi')
   const [activeRegion, setActiveRegion] = useState(null)
   const [activeDistrict, setActiveDistrict] = useState(null)
   const [allRegionIndexes, setAllRegionIndexes] = useState([])
   const [allDistrictIndexes, setAllDistrictIndexes] = useState([])
+  const [mapType, setMapType] = useState('pashni')
+  const [filterType, setFilterType] = useState('soil')
+  const [year, setYear] = useState('2024')
 
   const { data: regionsData } = useFetch('/api/map/regions', 'GET')
+
   const { data: indexDictionaryData } = useFetch(
     '/api/map/dictionaries/index',
     'GET'
@@ -71,6 +73,7 @@ export default function Page() {
     'GET'
   )
   const { data: soilData, update: fetchSoilData } = useFetch('', 'GET')
+  const { data: cultureData, update: fetchCultureData } = useFetch('', 'GET')
   const { data: districtsData, update: fetchDistrictsData } = useFetch(
     '',
     'GET'
@@ -81,9 +84,20 @@ export default function Page() {
     (state) => state
   )
 
-  const fetchIndexAndSoil = async (type, name) => {
+  const fetchIndexAndSoilOrCulture = async (
+    type,
+    name,
+    filter = filterType,
+    selectedYear = year
+  ) => {
     await fetchIndexData(`/api/map/index?type=${type}&name=${name}`)
-    await fetchSoilData(`/api/map/soil?type=${type}&name=${name}`)
+    if (filter === 'soil') {
+      await fetchSoilData(`/api/map/soil?type=${type}&name=${name}`)
+    } else if (filter === 'culture') {
+      await fetchCultureData(
+        `/api/map/culture?type=${type}&name=${name}&year=${selectedYear}`
+      )
+    }
   }
 
   const fetchDistricts = async (regionName) => {
@@ -92,7 +106,7 @@ export default function Page() {
 
   const getDistrictData = async (regionName) => {
     if (regionName) {
-      await fetchIndexAndSoil('region', regionName)
+      await fetchIndexAndSoilOrCulture('region', regionName)
       await fetchDistricts(regionName)
     } else {
       setDistricts(regionsData)
@@ -120,9 +134,9 @@ export default function Page() {
     if (districtsData) {
       const promises = districtsData.features?.map(async (feature) => {
         const data = await fetchIndexData(
-          `/api/map/index?type=district&name=${encodeURIComponent(feature.properties.adm2_ru)}`
+          `/api/map/index?type=district&name=${encodeURIComponent(feature.properties.dname_r)}`
         )
-        return { name: feature.properties.adm2_ru, data }
+        return { name: feature.properties.dname_r, data }
       })
       const results = await Promise.all(promises)
       setAllDistrictIndexes(results)
@@ -145,11 +159,21 @@ export default function Page() {
 
   const handleDistrictSelect = async (districtName) => {
     setActiveDistrict(districtName)
-    await fetchIndexAndSoil('district', districtName)
+    await fetchIndexAndSoilOrCulture('district', districtName)
     if (mapRef.current && mapRef.current.zoomToDistrict) {
       mapRef.current.zoomToDistrict(districtName)
     }
   }
+
+  useEffect(() => {
+    if (activeDistrict) {
+      fetchIndexAndSoilOrCulture('district', activeDistrict, filterType, year)
+    } else if (activeRegion) {
+      fetchIndexAndSoilOrCulture('region', activeRegion, filterType, year)
+    } else {
+      fetchIndexAndSoilOrCulture('region', 'Чуйская', filterType, year)
+    }
+  }, [filterType, year, activeRegion, activeDistrict])
 
   useEffect(() => {
     fetchAllRegionIndexes()
@@ -179,13 +203,42 @@ export default function Page() {
           }}
         >
           <Box>
-            <Button>
-              <Typography color="secondary" variant="h4">
-                Пашни
-              </Typography>
+            <Button
+              onClick={() => setMapType('pashni')}
+              sx={{
+                backgroundColor:
+                  mapType === 'pashni' ? 'primary.main' : 'grey.200',
+                color: mapType === 'pashni' ? 'white' : 'text.secondary',
+                '&:hover': {
+                  backgroundColor:
+                    mapType === 'pashni' ? 'primary.dark' : 'grey.300',
+                },
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                minWidth: '100px',
+              }}
+            >
+              <Typography variant="h5">Пашни</Typography>
             </Button>
-            <Button disabled sx={{ backgroundColor: '#f0f4f8' }}>
-              <Typography variant="h4">Пастбища</Typography>
+
+            <Button
+              onClick={() => setMapType('pastbishcha')}
+              sx={{
+                backgroundColor:
+                  mapType === 'pastbishcha' ? 'primary.main' : 'grey.200',
+                color: mapType === 'pastbishcha' ? 'white' : 'text.secondary',
+                '&:hover': {
+                  backgroundColor:
+                    mapType === 'pastbishcha' ? 'primary.dark' : 'grey.300',
+                },
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                minWidth: '100px',
+              }}
+            >
+              <Typography variant="h5">Пастбища</Typography>
             </Button>
           </Box>
 
@@ -258,7 +311,7 @@ export default function Page() {
                     <IndexCard
                       icon={Check}
                       title={matchedIndex?.title_ru ?? i.type}
-                      value={i.viIndex}
+                      value={Number(i.viIndex).toFixed(2)}
                       description={i.interpretation}
                       status={matchedStatus?.title_ru ?? i.status}
                       bgColor={INDEX_COLORS[i.type]}
@@ -275,9 +328,11 @@ export default function Page() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    gap: 2,
                     height: '135px',
                   }}
                 >
+                  <CircularProgress size={20} color="primary" />
                   <Typography variant="body1" color="text.secondary">
                     Данные загружаются
                   </Typography>
@@ -305,27 +360,34 @@ export default function Page() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle1">Фильтр по:</Typography>
                   <Select
-                    defaultValue="Тип почвы"
-                    name="Тип почвы"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    name="filterType"
                     sx={{
                       maxWidth: '100%',
                       width: '200px',
                     }}
                   >
-                    <Option value="Тип почвы">типу почвы</Option>
-                    <Option value="Болотистая">высоте</Option>
-                    <Option value="культурам">культурам</Option>
+                    <Option value="soil">типу почвы</Option>
+                    <Option value="culture">культурам</Option>
                   </Select>
-                  <Select
-                    defaultValue="за 2024"
-                    name="Тип почвы"
-                    sx={{
-                      maxWidth: '100%',
-                      width: '240px',
-                    }}
-                  >
-                    <Option value="за 2024">за 2024</Option>
-                  </Select>
+                  {filterType === 'culture' && (
+                    <Select
+                      value={year}
+                      onChange={(e) => setYear(e.target.value)}
+                      name="year"
+                      sx={{
+                        maxWidth: '100%',
+                        width: '240px',
+                      }}
+                    >
+                      {Array.from({ length: 6 }, (_, i) => 2020 + i).map(
+                        (y) => (
+                          <Option key={y} value={String(y)}>{`за ${y}`}</Option>
+                        )
+                      )}
+                    </Select>
+                  )}
                 </Box>
               }
             />
@@ -355,7 +417,7 @@ export default function Page() {
                     regionsData={regionsData}
                     districtsData={districtsData}
                     getDistrictsData={fetchDistricts}
-                    getIndexes={fetchIndexAndSoil}
+                    getIndexes={fetchIndexAndSoilOrCulture}
                     activeRegion={activeRegion}
                     setActiveRegion={setActiveRegion}
                     activeDistrict={activeDistrict}
@@ -364,11 +426,16 @@ export default function Page() {
                     indexData={allRegionIndexes}
                     districtsIndexData={allDistrictIndexes}
                     indexColors={INDEX_COLORS}
+                    landType={mapType}
                   />
                 </Grid>
                 <Grid item md={2} xs={12} sx={{ height: '100%' }}>
                   <SoilPieChart
-                    data={soilData?.slice(0, 5)}
+                    data={
+                      filterType === 'culture'
+                        ? cultureData?.slice(0, 5)
+                        : soilData?.slice(0, 5)
+                    }
                     title={
                       (activeRegion && `${activeRegion} область`) ||
                       (activeDistrict && `${activeDistrict} район`) ||
