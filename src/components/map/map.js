@@ -68,7 +68,7 @@ export const MapComponent = forwardRef(
       )
 
       if (matchedIndex && index) {
-        return `${matchedIndex.title_ru}: ${Number(index.viIndex).toFixed(2)}`
+        return `${matchedIndex.title_ru}: ${index.viIndex}`
       }
       return null
     }
@@ -81,7 +81,7 @@ export const MapComponent = forwardRef(
       )
 
       if (matchedIndex && index) {
-        return `${matchedIndex.title_ru}: ${Number(index.viIndex).toFixed(2)}`
+        return `${matchedIndex.title_ru}: ${index.viIndex}`
       }
       return null
     }

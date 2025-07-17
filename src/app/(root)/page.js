@@ -316,7 +316,7 @@ export default function Page() {
                     <IndexCard
                       icon={Check}
                       title={matchedIndex?.title_ru ?? i.type}
-                      value={Number(i.viIndex).toFixed(2)}
+                      value={i.viIndex}
                       description={i.interpretation}
                       status={matchedStatus?.title_ru ?? i.status}
                       bgColor={INDEX_COLORS[i.type]}
