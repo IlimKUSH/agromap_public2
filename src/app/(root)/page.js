@@ -365,61 +365,147 @@ export default function Page() {
           })()}
         </Grid>
 
-        <Grid container spacing={2} sx={{ height: { xs: 'auto', md: '100%' } }}>
-          <Grid item md={2} xs={12}>
-            <RegionsMenu
-              regions={
-                !activeRegion && !activeDistrict
-                  ? regionsData?.features
-                  : getDistricts()?.features
-              }
-              activeDistrict={activeDistrict}
-              setActiveDistrict={setActiveDistrict}
-              getDistrictsData={getDistrictData}
-              activeRegion={activeRegion}
-              setActiveRegion={setActiveRegion}
-              onBackToRegions={handleBackToRegions}
-              onRegionSelect={handleRegionSelect}
-              onDistrictSelect={handleDistrictSelect}
-              districtsLoading={districtsLoading}
-            />
-          </Grid>
-          <Grid item md={8} xs={12} sx={{ minHeight: { xs: 300, md: 'auto' } }}>
-            <MapComponent
-              ref={mapRef}
-              indexDictionaryData={indexDictionaryData}
-              regionsData={regionsData}
-              districtsData={districtsData}
-              getDistrictsData={fetchDistricts}
-              getIndexes={fetchIndexAndSoilOrCulture}
-              activeRegion={activeRegion}
-              setActiveRegion={setActiveRegion}
-              activeDistrict={activeDistrict}
-              setActiveDistrict={setActiveDistrict}
-              activeType={activeType}
-              indexData={allRegionIndexes}
-              districtsIndexData={allDistrictIndexes}
-              indexColors={INDEX_COLORS}
-              landType={mapType}
-            />
-          </Grid>
-          <Grid item md={2} xs={12}>
-            <SoilPieChart
-              data={
-                filterType === 'culture'
-                  ? cultureData?.slice(0, 5)
-                  : soilData?.slice(0, 5)
-              }
+        <Box>
+          <Card
+            sx={{
+              boxShadow: 'none',
+              border: 'none',
+              background: 'transparent',
+            }}
+          >
+            <CardHeader
               title={
                 (activeRegion && `${activeRegion} область`) ||
                 (activeDistrict && `${activeDistrict} район`) ||
                 'Кыргызская Республика'
               }
-              cultureLoading={cultureLoading}
-              filterType={filterType}
+              sx={{
+                p: { xs: 1, md: 2 },
+                gap: '5px',
+                alignItems: 'start',
+                flexWrap: 'wrap',
+                width: '100%',
+                '&': {
+                  width: { xs: '100%', md: '865px' },
+                },
+              }}
+              action={
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'stretch', sm: 'center' },
+                    flexWrap: 'wrap',
+                    gap: 1,
+                    minWidth: { xs: '100%', sm: 0 },
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ minWidth: 80 }}>
+                    Фильтр по:
+                  </Typography>
+                  <Select
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    name="filterType"
+                    sx={{ width: { xs: '100%', sm: '200px' } }}
+                  >
+                    <Option value="soil">типу почвы</Option>
+                    <Option value="culture">культурам</Option>
+                  </Select>
+                  <Box sx={{ width: { xs: '100%', sm: '150px' } }}>
+                    {filterType === 'culture' ? (
+                      <Select
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        name="year"
+                        fullWidth
+                      >
+                        {Array.from({ length: 6 }, (_, i) => 2020 + i).map(
+                          (y) => (
+                            <Option
+                              key={y}
+                              value={String(y)}
+                            >{`за ${y}`}</Option>
+                          )
+                        )}
+                      </Select>
+                    ) : (
+                      // Empty box to reserve the same space
+                      <Box sx={{ height: 40 }} />
+                    )}
+                  </Box>
+                </Box>
+              }
             />
+          </Card>
+
+          <Grid
+            container
+            spacing={2}
+            sx={{ height: { xs: 'auto', md: '100%' } }}
+          >
+            <Grid item md={2} xs={12}>
+              <RegionsMenu
+                regions={
+                  !activeRegion && !activeDistrict
+                    ? regionsData?.features
+                    : getDistricts()?.features
+                }
+                activeDistrict={activeDistrict}
+                setActiveDistrict={setActiveDistrict}
+                getDistrictsData={getDistrictData}
+                activeRegion={activeRegion}
+                setActiveRegion={setActiveRegion}
+                onBackToRegions={handleBackToRegions}
+                onRegionSelect={handleRegionSelect}
+                onDistrictSelect={handleDistrictSelect}
+                districtsLoading={districtsLoading}
+              />
+            </Grid>
+            <Grid
+              item
+              md={8}
+              xs={12}
+              sx={{ minHeight: { xs: 300, md: 'auto' } }}
+            >
+              <MapComponent
+                ref={mapRef}
+                indexDictionaryData={indexDictionaryData}
+                regionsData={regionsData}
+                districtsData={districtsData}
+                getDistrictsData={fetchDistricts}
+                getIndexes={fetchIndexAndSoilOrCulture}
+                activeRegion={activeRegion}
+                setActiveRegion={setActiveRegion}
+                activeDistrict={activeDistrict}
+                setActiveDistrict={setActiveDistrict}
+                activeType={activeType}
+                indexData={allRegionIndexes}
+                districtsIndexData={allDistrictIndexes}
+                indexColors={INDEX_COLORS}
+                landType={mapType}
+              />
+            </Grid>
+            <Grid item md={2} xs={12}>
+              <Card sx={{ p: 2, height: '100%' }}>
+                <SoilPieChart
+                  data={
+                    filterType === 'culture'
+                      ? cultureData?.slice(0, 5)
+                      : soilData?.slice(0, 5)
+                  }
+                  title={
+                    (activeRegion && `${activeRegion} область`) ||
+                    (activeDistrict && `${activeDistrict} район`) ||
+                    'Кыргызская Республика'
+                  }
+                  cultureLoading={cultureLoading}
+                  filterType={filterType}
+                />
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
+        </Box>
       </Stack>
     </Box>
   )

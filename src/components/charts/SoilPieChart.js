@@ -161,7 +161,8 @@ export default function SoilPieChart({
                         mb: 1,
                       }}
                     >
-                      {item.name}: {formatNumber(item.totalAreaHa)} га.
+                      {item.name || 'Культура неизвестна'}:{' '}
+                      {formatNumber(item.totalAreaHa)} га.
                     </Typography>
                   </Box>
                 }
