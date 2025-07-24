@@ -182,7 +182,7 @@ export default function Page() {
 
   useEffect(() => {
     fetchAllRegionIndexes()
-    fetchSoilData(`/api/map/soil?type=region&name=Чуйская`)
+    // fetchSoilData(`/api/map/soil?type=region&name=Чуйская`)
   }, [])
 
   useEffect(() => {
@@ -192,22 +192,31 @@ export default function Page() {
   return (
     <Box
       sx={{
-        maxWidth: 'var(--Content-maxWidth)',
-        m: 'var(--Content-margin)',
-        p: '24px',
-        width: 'var(--Content-width)',
+        height: '100dvh',
+        maxWidth: { xs: '100%', md: 'var(--Content-maxWidth)' },
+        m: { xs: 0, md: 'var(--Content-margin)' },
+        p: { xs: 1, md: '24px' },
+        width: { xs: '100%', md: 'var(--Content-width)' },
       }}
     >
-      <Stack spacing={2}>
+      <Stack spacing={2} height="100%">
         <Stack
           direction={{ xs: 'column', sm: 'row', md: 'row' }}
           spacing={3}
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: { xs: 2, md: 0 },
           }}
         >
-          <Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignSelf: 'start',
+              gap: 1,
+            }}
+          >
             <Button
               onClick={() => setMapType('pashni')}
               sx={{
@@ -222,11 +231,11 @@ export default function Page() {
                 px: 2,
                 py: 1,
                 minWidth: '100px',
+                width: { xs: '100%', sm: 'auto' },
               }}
             >
               <Typography variant="h5">Пашни</Typography>
             </Button>
-
             <Button
               onClick={() => setMapType('pastbishcha')}
               sx={{
@@ -241,6 +250,7 @@ export default function Page() {
                 px: 2,
                 py: 1,
                 minWidth: '100px',
+                width: { xs: '100%', sm: 'auto' },
               }}
             >
               <Typography variant="h5">Пастбища</Typography>
@@ -252,13 +262,21 @@ export default function Page() {
               flexShrink: 0,
               textAlign: 'center',
               fontWeight: 'bold',
+              fontSize: { xs: '1.1rem', md: '1.5rem' },
             }}
             variant="h5"
           >
             Интелектуальная система AgroMap
           </Typography>
 
-          <Stack direction="row" spacing={2}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              justifyContent: { xs: 'center', md: 'flex-end' },
+              alignSelf: 'end',
+            }}
+          >
             <React.Fragment>
               <Tooltip title="Смена языка">
                 <IconButton
@@ -266,7 +284,7 @@ export default function Page() {
                   ref={popover.anchorRef}
                   sx={{
                     display: {
-                      xs: 'none',
+                      xs: 'inline-flex',
                       md: 'inline-flex',
                     },
                   }}
@@ -287,6 +305,7 @@ export default function Page() {
               onClick={() =>
                 (window.location.href = process.env.NEXT_PUBLIC_API_DOMEN)
               }
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
               Войти
             </Button>
@@ -346,117 +365,60 @@ export default function Page() {
           })()}
         </Grid>
 
-        <Grid item md={12} xs={12}>
-          <Card sx={{ height: 'calc(100dvh - 265px)' }}>
-            <CardHeader
+        <Grid container spacing={2} sx={{ height: { xs: 'auto', md: '100%' } }}>
+          <Grid item md={2} xs={12}>
+            <RegionsMenu
+              regions={
+                !activeRegion && !activeDistrict
+                  ? regionsData?.features
+                  : getDistricts()?.features
+              }
+              activeDistrict={activeDistrict}
+              setActiveDistrict={setActiveDistrict}
+              getDistrictsData={getDistrictData}
+              activeRegion={activeRegion}
+              setActiveRegion={setActiveRegion}
+              onBackToRegions={handleBackToRegions}
+              onRegionSelect={handleRegionSelect}
+              onDistrictSelect={handleDistrictSelect}
+              districtsLoading={districtsLoading}
+            />
+          </Grid>
+          <Grid item md={8} xs={12} sx={{ minHeight: { xs: 300, md: 'auto' } }}>
+            <MapComponent
+              ref={mapRef}
+              indexDictionaryData={indexDictionaryData}
+              regionsData={regionsData}
+              districtsData={districtsData}
+              getDistrictsData={fetchDistricts}
+              getIndexes={fetchIndexAndSoilOrCulture}
+              activeRegion={activeRegion}
+              setActiveRegion={setActiveRegion}
+              activeDistrict={activeDistrict}
+              setActiveDistrict={setActiveDistrict}
+              activeType={activeType}
+              indexData={allRegionIndexes}
+              districtsIndexData={allDistrictIndexes}
+              indexColors={INDEX_COLORS}
+              landType={mapType}
+            />
+          </Grid>
+          <Grid item md={2} xs={12}>
+            <SoilPieChart
+              data={
+                filterType === 'culture'
+                  ? cultureData?.slice(0, 5)
+                  : soilData?.slice(0, 5)
+              }
               title={
                 (activeRegion && `${activeRegion} область`) ||
                 (activeDistrict && `${activeDistrict} район`) ||
                 'Кыргызская Республика'
               }
-              sx={{
-                p: 2,
-                '&': {
-                  width: '865px',
-                },
-              }}
-              action={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="subtitle1">Фильтр по:</Typography>
-
-                  <Select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    name="filterType"
-                    sx={{ width: '200px' }}
-                  >
-                    <Option value="soil">типу почвы</Option>
-                    <Option value="culture">культурам</Option>
-                  </Select>
-
-                  <Box sx={{ width: '150px' }}>
-                    {filterType === 'culture' ? (
-                      <Select
-                        value={year}
-                        onChange={(e) => setYear(e.target.value)}
-                        name="year"
-                        fullWidth
-                      >
-                        {Array.from({ length: 6 }, (_, i) => 2020 + i).map(
-                          (y) => (
-                            <Option
-                              key={y}
-                              value={String(y)}
-                            >{`за ${y}`}</Option>
-                          )
-                        )}
-                      </Select>
-                    ) : (
-                      // Empty box to reserve the same space
-                      <Box sx={{ height: 40 }} />
-                    )}
-                  </Box>
-                </Box>
-              }
+              cultureLoading={cultureLoading}
+              filterType={filterType}
             />
-            <CardContent sx={{ p: 0, height: '100%' }}>
-              <Grid container spacing={2} sx={{ height: '100%' }}>
-                <Grid item md={2} xs={12}>
-                  <RegionsMenu
-                    regions={
-                      !activeRegion && !activeDistrict
-                        ? regionsData?.features
-                        : getDistricts()?.features
-                    }
-                    activeDistrict={activeDistrict}
-                    setActiveDistrict={setActiveDistrict}
-                    getDistrictsData={getDistrictData}
-                    activeRegion={activeRegion}
-                    setActiveRegion={setActiveRegion}
-                    onBackToRegions={handleBackToRegions}
-                    onRegionSelect={handleRegionSelect}
-                    onDistrictSelect={handleDistrictSelect}
-                    districtsLoading={districtsLoading}
-                  />
-                </Grid>
-                <Grid item md={8} xs={12}>
-                  <MapComponent
-                    ref={mapRef}
-                    indexDictionaryData={indexDictionaryData}
-                    regionsData={regionsData}
-                    districtsData={districtsData}
-                    getDistrictsData={fetchDistricts}
-                    getIndexes={fetchIndexAndSoilOrCulture}
-                    activeRegion={activeRegion}
-                    setActiveRegion={setActiveRegion}
-                    activeDistrict={activeDistrict}
-                    setActiveDistrict={setActiveDistrict}
-                    activeType={activeType}
-                    indexData={allRegionIndexes}
-                    districtsIndexData={allDistrictIndexes}
-                    indexColors={INDEX_COLORS}
-                    landType={mapType}
-                  />
-                </Grid>
-                <Grid item md={2} xs={12} sx={{ height: '100%' }}>
-                  <SoilPieChart
-                    data={
-                      filterType === 'culture'
-                        ? cultureData?.slice(0, 5)
-                        : soilData?.slice(0, 5)
-                    }
-                    title={
-                      (activeRegion && `${activeRegion} область`) ||
-                      (activeDistrict && `${activeDistrict} район`) ||
-                      'Кыргызская Республика'
-                    }
-                    cultureLoading={cultureLoading}
-                    filterType={filterType}
-                  />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+          </Grid>
         </Grid>
       </Stack>
     </Box>

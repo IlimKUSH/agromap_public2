@@ -100,9 +100,9 @@ export function RegionsMenu({
                   sx={{
                     p: '10px 30px',
                     cursor: 'pointer',
-                    backgroundColor: isActive ? '#ffe0b2' : 'unset',
+                    backgroundColor: isActive ? '#e0e0e0' : 'unset',
                     '&:hover': {
-                      backgroundColor: isActive ? '#ffe0b2' : '#f5f5f5',
+                      backgroundColor: isActive ? '#e0e0e0' : '#f0f0f0',
                     },
                   }}
                 >
@@ -113,14 +113,12 @@ export function RegionsMenu({
                         noWrap
                         variant="subtitle2"
                         onClick={handleSelect}
-                        sx={
-                          isActive
-                            ? {
-                                fontWeight: 'bold',
-                                color: '#ff9800',
-                              }
-                            : {}
-                        }
+                        sx={{
+                          fontWeight: isActive ? 'bold' : 'normal',
+                          color: isActive
+                            ? '#333'
+                            : {},
+                        }}
                       >
                         {isRegion
                           ? region.properties?.pname_r
